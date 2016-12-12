@@ -1,0 +1,52 @@
+<!doctype html>
+<html>
+ <head>
+   <title>Brewberry &pi;</title>
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <meta name="apple-mobile-web-app-capable" content="yes" />
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+ </head>
+ <body>
+  <div id="container">
+   <div id="logger">
+    <div id="gauge"></div>
+    <div id="chart"></div>
+   </div>
+
+   <div id="controls" ng-controller="Controls">
+    <span>Start</span>
+    <span>Stop</span>
+    <span>Mash scheme</span>
+   </div>
+  </div>
+
+  <script>
+var client = null;
+setInterval((function () {
+  var offset = 0;
+  return function () {
+    if (client == null || client.readyState != 3 || client.responseText.length > 4096) {
+      if (client) client.abort();
+      console.log('Set up new client', client);
+      client = new XMLHttpRequest();
+      client.open("GET", "logger", true);
+      client.send();
+      client.onreadystatechange = function() {
+        if (this.readyState == 3) {
+          var text = this.responseText;
+          try {
+            var json = JSON.parse(text.substring(offset));
+            console.log(json);
+          } catch (e) {
+            console.log('parse error', e);
+          }
+          offset = text.length;
+        }
+      }
+    }
+  }
+})(), 2000);
+</script> 
+ </body>
+</html>

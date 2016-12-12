@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+ <head>
+   <title>Brewberry &pi;</title>
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, height=device-height,  initial-scale=1.0, user-scalable=no;user-scalable=0;"/>
+   <meta name="apple-mobile-web-app-capable" content="yes" />
+  <link rel="stylesheet" href="css/app.css"/>
+ </head>
+ <body>
+  <div id="container">
+
+   <div id="controls">
+    <input class="control" type="number" id="set-temperature" size="4" placeholder="Temp" />
+    <a class="control" id="turn-on" />Start</a>
+    <a class="control" id="turn-off" />Stop</a>
+   </div>
+
+   <div id="logger">
+    <div id="temperature"></div>
+    <div id="log-chart"></div>
+   </div>
+
+   <div id="health">--:--:--</div>
+  </div>
+
+  <script src="js/jquery.js"></script>
+  <script src="js/riot.js"></script>
+  <script src="js/highcharts.js"></script>
+  <script src="js/brewberry-directive.js"></script>
+  <script src="js/brewberry.js"></script>
+ </body>
+</html>
