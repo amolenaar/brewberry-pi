@@ -6,9 +6,10 @@ defmodule WebTest do
 
   @opts Brewberry.Router.init([])
 
-  def request(method, path) do
-    conn = conn(method, path)
-    Brewberry.Router.call(conn, @opts)
+  def request(method, path, body \\ nil) do
+    conn = conn(method, path, body)
+    |> put_req_header("content-type", "application/json")
+    |> Brewberry.Router.call(@opts)
   end
 
   test "/ returns index file" do
@@ -16,6 +17,7 @@ defmodule WebTest do
 
     assert conn.state == :set
     assert conn.status == 301
+    assert get_resp_header(conn, "location") === ["/index.html"]
   end
 
   test "returns index file" do
@@ -33,4 +35,15 @@ defmodule WebTest do
     assert conn.status == 200
     assert conn.resp_body == "{\"mash-temperature\":12}"
   end
+
+  test "set temperature" do
+    conn = request(:post, "/temperature", "{\"set\":42}")
+
+    assert conn.params == %{"set" => 42}
+    assert conn.state == :sent
+    assert conn.status == 200
+    assert conn.resp_body == "{\"mash-temperature\":42}"
+  end
+
+
 end
