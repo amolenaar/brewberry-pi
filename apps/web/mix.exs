@@ -15,7 +15,7 @@ defmodule Web.Mixfile do
   end
 
   def application do
-    [applications: [:cowboy, :logger, :plug, :plug_redirect],
+    [applications: [:cowboy, :logger, :plug, :plug_redirect, :ctrl],
     mod: {Brewberry.Web, []},
     env: [cowboy_port: 8080]]
   end
@@ -25,7 +25,8 @@ defmodule Web.Mixfile do
       {:cowboy, "~> 1.0"},
       {:plug, "~> 1.3.0"},
       {:plug_redirect, "~> 0.0"},
-      {:poison, "~> 3.0"}
+      {:poison, "~> 3.0"},
+      {:ctrl, in_umbrella: true}
     ]
   end
 end

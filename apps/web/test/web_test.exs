@@ -4,12 +4,14 @@ defmodule WebTest do
 
   @moduletag :capture_log
 
-  @opts Brewberry.Router.init([])
+  alias Brewberry.Router
+
+  @opts Router.init([])
 
   def request(method, path, body \\ nil) do
     conn(method, path, body)
     |> put_req_header("content-type", "application/json")
-    |> Brewberry.Router.call(@opts)
+    |> Router.call(@opts)
   end
 
   test "/ returns index file" do
