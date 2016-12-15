@@ -7,7 +7,7 @@ defmodule WebTest do
   @opts Brewberry.Router.init([])
 
   def request(method, path, body \\ nil) do
-    conn = conn(method, path, body)
+    conn(method, path, body)
     |> put_req_header("content-type", "application/json")
     |> Brewberry.Router.call(@opts)
   end
@@ -45,5 +45,12 @@ defmodule WebTest do
     assert conn.resp_body == "{\"mash-temperature\":42}"
   end
 
+#  xtest "get logging data" do
+#    conn = request(:get, "/logger")
+#
+#    assert conn.state == :sent
+#    assert conn.status == 200
+#    assert conn.resp_body == "{\"mash-temperature\":42}"
+#  end
 
 end

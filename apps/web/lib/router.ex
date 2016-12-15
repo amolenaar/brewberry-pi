@@ -1,5 +1,8 @@
 defmodule Brewberry.Router do
   use Plug.Router
+
+  @moduledoc false
+
   alias Brewberry.Sample
 
   if Mix.env == :dev do
@@ -29,13 +32,13 @@ defmodule Brewberry.Router do
 
   post "/controller" do
     new_controller_state = conn.params["set"]
-    send_resp(conn, 200, Poison.encode!(%{ "controller" => new_controller_state}))
+    send_resp(conn, 200, Poison.encode!(%{"controller" => new_controller_state}))
   end
 
   get "/logger" do
     put_resp_header(conn, "content-type", "text/event-stream")
     |> send_chunked(200)
-    |>send_events
+    |> send_events
   end
 
   defp send_events(conn, id \\ 0) do
