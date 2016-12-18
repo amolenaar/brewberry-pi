@@ -18,7 +18,13 @@ defmodule ControllerTest do
     assert Controller.Config.time(config, 10) == 445
   end
 
-  test "controller starts in resting state", %{controller: ctrl} do
-    assert Controller.state(ctrl) == :resting
+  test "controller starts in idle mode", %{controller: ctrl} do
+    {:idle, _} = Controller.get_state(ctrl)
   end
+
+  test "controller can set temperarure", %{controller: ctrl} do
+    Controller.temperature(ctrl, 60)
+    {_, 60} = Controller.get_state(ctrl)
+  end
+
 end
