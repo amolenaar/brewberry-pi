@@ -2,6 +2,7 @@ defmodule ControllerTest do
   use ExUnit.Case
 
   alias Brewberry.Controller
+  alias Brewberry.Sample
 
   doctest Controller
 
@@ -20,6 +21,27 @@ defmodule ControllerTest do
 
   test "controller starts in idle mode", %{controller: ctrl} do
     {:idle, _} = Controller.get_state(ctrl)
+  end
+
+  test "controller turned on starts in resting mode", %{controller: ctrl} do
+    Controller.start(ctrl)
+    {:resting, _} = Controller.get_state(ctrl)
+  end
+
+  test "controller remains resting when set temperature is not above current", %{controller: ctrl} do
+    Controller.start(ctrl)
+    Controller.temperature(ctrl, 60)
+    Controller.update(ctrl, %Sample{temperature: 60})
+
+    {:resting, _} = Controller.get_state(ctrl)
+  end
+
+  test "controller starts heating when set temperature is above current", %{controller: ctrl} do
+    Controller.start(ctrl)
+    Controller.temperature(ctrl, 60)
+    Controller.update(ctrl, %Sample{temperature: 20})
+
+    {:heating, _} = Controller.get_state(ctrl)
   end
 
   test "controller can set temperarure", %{controller: ctrl} do

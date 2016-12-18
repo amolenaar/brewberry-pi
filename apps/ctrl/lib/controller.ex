@@ -42,16 +42,67 @@ defmodule Brewberry.Controller do
       {:ok, {:idle, 0, config}}
     end
 
-    def handle_call({:state}, _from, {action, temp, _config} = state) do
-      {:reply, {action, temp}, state}
+    @doc"Read state (mode + temperature) from controller"
+    def handle_call({:state}, _from, {mode, temp, _config} = state) do
+      {:reply, {mode, temp}, state}
     end
 
-    def handle_cast({:temperature, temperature}, {action, _temp, config}) do
-      {:noreply, {action, temperature, config}}
+
+   @doc "Start the controller"
+    def handle_cast({:start}, {_mode, temp, config}) do
+      {:noreply, {:resting, temp, config}}
     end
 
-    def handle_cast(%Sample{} = _sample, {:resting, _temp, _config} = state) do
+    @doc "Set the temperature"
+    def handle_cast({:temperature, temperature}, {mode, _temp, config}) do
+      {:noreply, {mode, temperature, config}}
+    end
+
+    @doc "In Idle state heating is turned of an nothing else happens"
+    def handle_cast(%Sample{} = _sample, {:idle, _temp, _config} = state) do
+      # TODO: turn heating off
       {:noreply, state}
+    end
+
+    @doc """
+            if io.read_heater():
+                io.set_heater(Off)
+
+            if mash_temperature - io.read_temperature() > 0.1:
+                return Heating
+            return Resting
+    """
+    def handle_cast(%Sample{temperature: sample_temp}, {:resting, temp, config}) do
+      # TODO: Ensure heater is turned off
+      next_mode = if temp - sample_temp > 0.1, do: :heating, else: :resting
+      {:noreply, {next_mode, temp, config}}
+    end
+
+    @doc """
+            dT = mash_temperature - io.read_temperature()
+
+            if dT <= 0:
+                return Resting
+
+            end_time = io.read_time() + config.time(dT)
+
+            io.set_heater(On)
+
+            @state
+            def Heating():
+                t = io.read_time()
+                if t >= end_time:
+                    return Slacking
+                return Heating
+            return Heating
+    """
+    def handle_cast(%Sample{time: sample_time, temperature: sample_temp}, {:heating, temp, config}) do
+      dT = temp - sample_temp
+      if dT < 0 do
+        {:resting, temp,config}
+      else
+        _end_time = sample_time + Config.time(config, dT)
+      end
     end
   end
 
@@ -66,6 +117,10 @@ defmodule Brewberry.Controller do
 
   def start_link(config) do
     GenServer.start_link(Server, config, [])
+  end
+
+  def start(controller) do
+    GenServer.cast(controller, {:start})
   end
 
   def temperature(controller, temperature) do
