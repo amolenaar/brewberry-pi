@@ -3,7 +3,7 @@ defmodule Brewberry.Sample do
   @moduledoc """
   This module defines what a temperature sample looks like.
 
-  * `:time` is a timestamp (`DateTime`),
+  * `:time` is a unix timestamp (in seconds),
   * `:temperature` the measured temperature (in &deg;C),
   * `heater` defines the current (desired) heater state (`:on` or `:off`),
   * `heating` defines the current (measured) heater state (`true` or `false`),

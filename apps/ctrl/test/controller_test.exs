@@ -19,34 +19,58 @@ defmodule ControllerTest do
     assert Controller.Config.time(config, 10) == 445
   end
 
-  test "controller starts in idle mode", %{controller: ctrl} do
-    {:idle, _} = Controller.get_state(ctrl)
+  test "controller starts in idle mode" do
+    %{mode: mode} = Controller.update_sample(%Sample{})
+
+    assert mode == :idle
   end
 
-  test "controller turned on starts in resting mode", %{controller: ctrl} do
-    Controller.start(ctrl)
-    {:resting, _} = Controller.get_state(ctrl)
+  test "controller turned on starts in resting mode" do
+    Controller.resume()
+    %{mode: mode} = Controller.update_sample(%Sample{mode: :idle, temperature: 60, mash_temperature: 60})
+
+    assert mode == :resting
   end
 
-  test "controller remains resting when set temperature is not above current", %{controller: ctrl} do
-    Controller.start(ctrl)
-    Controller.temperature(ctrl, 60)
-    Controller.update(ctrl, %Sample{temperature: 60})
+  test "controller remains resting when set temperature is not above current" do
+    Controller.resume()
+    %{mode: mode} = Controller.update_sample(%Sample{mode: :resting, temperature: 60, mash_temperature: 42})
 
-    {:resting, _} = Controller.get_state(ctrl)
+    assert mode == :resting
   end
 
-  test "controller starts heating when set temperature is above current", %{controller: ctrl} do
-    Controller.start(ctrl)
-    Controller.temperature(ctrl, 60)
-    Controller.update(ctrl, %Sample{temperature: 20})
+  test "controller starts heating when set temperature is above current" do
+    Controller.resume()
+    %{mode: mode} = Controller.update_sample(%Sample{mode: :resting, temperature: 42, mash_temperature: 60})
 
-    {:heating, _} = Controller.get_state(ctrl)
+    assert mode == :heating
   end
 
-  test "controller can set temperarure", %{controller: ctrl} do
-    Controller.temperature(ctrl, 60)
-    {_, 60} = Controller.get_state(ctrl)
+  test "controller keeps heating when time is not done" do
+    Controller.resume()
+    # 2 degrees matches 89 seconds of heating
+    Controller.update_sample(%Sample{mode: :resting, time: 0, temperature: 58, mash_temperature: 60})
+    %{mode: mode} = Controller.update_sample(%Sample{mode: :heating, time: 2, temperature: 42, mash_temperature: 60})
+
+    assert mode == :heating
+  end
+
+  test "controller stops heating is mash temperature is lower" do
+    Controller.resume()
+    # 2 degrees matches 89 seconds of heating
+    Controller.update_sample(%Sample{mode: :resting, time: 0, temperature: 58, mash_temperature: 60})
+    %{mode: mode} = Controller.update_sample(%Sample{mode: :heating, time: 2, temperature: 42, mash_temperature: 21})
+
+    assert mode == :slacking
+   end
+
+  test "controller stops heating if time is over" do
+    Controller.resume()
+    # 2 degrees matches 89 seconds of heating
+    Controller.update_sample(%Sample{mode: :resting, time: 0, temperature: 58, mash_temperature: 60})
+    %{mode: mode} = Controller.update_sample(%Sample{mode: :heating, time: 100, temperature: 42, mash_temperature: 60})
+
+    assert mode == :slacking
   end
 
 end

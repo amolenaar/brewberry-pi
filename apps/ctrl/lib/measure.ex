@@ -20,7 +20,7 @@ defmodule Brewberry.Measure do
     end
 
     def time? do
-      DateTime.utc_now
+      DateTime.utc_now |> DateTime.to_unix
     end
   end
 
@@ -32,6 +32,7 @@ defmodule Brewberry.Measure do
   def update_sample(sample) do
     GenServer.call(__MODULE__, sample)
   end
+
 
   ## Server side:
 
