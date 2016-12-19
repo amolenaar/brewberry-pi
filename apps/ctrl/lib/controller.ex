@@ -5,15 +5,15 @@ defmodule Brewberry.Controller do
 
               ,---------.
               v         |
-            Idle ------>|
+             Idle ----->|
               | :start  |
               v         |
         ,-> Resting --->|
         |     | dT>0.1  |
-        |     V         |
+        |     v         |
         |   Heating --->|
         |     | dt=0    |
-        |     V         |
+        |     v         |
         |   Slacking ---' :stop
         |     | dT<0.05
         `-----'
@@ -135,7 +135,7 @@ defmodule Brewberry.Controller do
   @doc """
   Starts the registry.
   """
-  def start_link() do
+  def start_link do
     start_link(%Config{})
   end
 
@@ -143,11 +143,11 @@ defmodule Brewberry.Controller do
     GenServer.start_link(Server, config, [name: __MODULE__])
   end
 
-  def resume() do
+  def resume do
     GenServer.cast(__MODULE__, :resume)
   end
 
-  def pause() do
+  def pause do
     GenServer.cast(__MODULE__, :pause)
   end
 
