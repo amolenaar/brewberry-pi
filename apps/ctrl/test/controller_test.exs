@@ -73,4 +73,13 @@ defmodule ControllerTest do
     assert mode == :slacking
   end
 
+  test "controller keeps slacking until temperature is declining" do
+    Controller.resume()
+    # 2 degrees matches 89 seconds of heating
+    Controller.update_sample(%Sample{mode: :slacking, time: 0, temperature: 58, mash_temperature: 60})
+    %{mode: mode} = Controller.update_sample(%Sample{mode: :slacking, time: 100, temperature: 58.04, mash_temperature: 60})
+
+    assert mode == :resting
+  end
+
 end

@@ -9,10 +9,15 @@ defmodule Brewberry.Measure do
   * `time` updated
   """
 
+  defmodule Backend do
+    @callback temperature?() :: float
+    @callback time?() :: DateTime
+  end
+
   use GenServer
 
   defmodule FakeBackend do
-    @behaviour Brewberry.Backend
+    @behaviour Backend
 
     def temperature? do
       time = DateTime.utc_now |> DateTime.to_unix

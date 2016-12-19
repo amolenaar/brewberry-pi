@@ -7,7 +7,7 @@ defmodule MeasureTest do
   alias Brewberry.Sample
 
   defmodule StaticBackend do
-    @behaviour Brewberry.Backend
+    @behaviour Brewberry.Measure.Backend
     def temperature?(), do: 42
     def time?(), do: 12345
   end
