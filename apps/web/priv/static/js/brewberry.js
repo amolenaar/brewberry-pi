@@ -77,10 +77,10 @@ $(function () {
 
     var logger = new Logger(),
         controls = new Controls();
-    
+
     /* Chart */
     var chart = logChart($("#log-chart"));
-    
+
     addSeries(chart, logger, {
         "name": "Heater",
         "type": "switch",
@@ -91,7 +91,7 @@ $(function () {
         "name": "Mash temperature",
         "type": "temperature",
         "x": "time",
-        "y": "mash-temperature",
+        "y": "mash_temperature",
         "color": "#DDDF0D" });
     addSeries(chart, logger, {
         "name": "Temperature",
@@ -108,7 +108,7 @@ $(function () {
         healthDisplay = $("#health");
 
     logger.onSample(function (sample) {
-        turnOnButton.text(sample.controller);
+        turnOnButton.text(sample.mode);
     });
 
     logger.onSample(function (sample) {

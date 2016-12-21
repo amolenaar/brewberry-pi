@@ -1,4 +1,6 @@
 defmodule Brewberry.Measure do
+  use GenServer
+
   @moduledoc """
   Measure the current temperature.
 
@@ -13,8 +15,6 @@ defmodule Brewberry.Measure do
     @callback temperature?() :: float
     @callback time?() :: DateTime
   end
-
-  use GenServer
 
   defmodule FakeBackend do
     @behaviour Backend

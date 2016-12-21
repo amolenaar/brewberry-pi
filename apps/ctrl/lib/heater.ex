@@ -7,16 +7,31 @@ defmodule Brewberry.Heater do
   `heater` property as a result.
   """
 
-    defmodule Backend do
-      @moduledoc """
-      Deal with heater I/O. Should return `:on` or `:off`,
-      depending of (new) state of the heater.
-      """
-      @callback on!() :: atom
-      @callback off!() :: atom
-    end
+  defmodule Backend do
+    @moduledoc """
+    Deal with heater I/O. Should return `:on` or `:off`,
+    depending of (new) state of the heater.
+    """
+    @callback on!() :: atom
+    @callback off!() :: atom
+  end
 
   alias Brewberry.Sample
+
+  defmodule FakeBackend do
+    @behaviour Backend
+    require Logger
+
+    def on! do
+#      Logger.info("Heater is :on")
+      :on
+    end
+
+    def off! do
+#      Logger.info("Heater is :off")
+      :off
+    end
+  end
 
   def start_link(backend) do
     Agent.start_link(fn -> backend end, name: __MODULE__)

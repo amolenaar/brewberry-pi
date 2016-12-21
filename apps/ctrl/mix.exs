@@ -18,7 +18,8 @@ defmodule Ctrl.Mixfile do
   #
   # Type "mix help compile.app" for more information
   def application do
-    [applications: [:logger]]
+    [applications: [:logger],
+    mod: {Brewberry.Ctrl, [Brewberry.Measure.FakeBackend, Brewberry.Heater.FakeBackend]}]
   end
 
   # Dependencies can be Hex packages:

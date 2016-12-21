@@ -12,10 +12,11 @@ defmodule Brewberry.Web do
     port = Application.get_env(:web, :cowboy_port, 8080)
 
     children = [
-      Cowboy.child_spec(:http, Router, [], port: port)
+      Cowboy.child_spec(:http, Router, [], port: port),
+      worker(Task, [fn -> Brewberry.ControllerLoop.run_infinite! end])
     ]
 
-    opts = [strategy: :one_for_one, name: Brewberry.Supervisor]
+    opts = [strategy: :one_for_one, name: Brewberry.Web]
     Supervisor.start_link(children, opts)
   end
 end

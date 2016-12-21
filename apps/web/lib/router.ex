@@ -3,8 +3,6 @@ defmodule Brewberry.Router do
 
   @moduledoc false
 
-  alias Brewberry.Sample
-
   if Mix.env == :dev do
     use Plug.Debugger
   end
@@ -23,6 +21,7 @@ defmodule Brewberry.Router do
 
   post "/temperature" do
     new_temperature = conn.params["set"]
+    Brewberry.MashTemperature.set!(new_temperature)
     send_resp(conn, 200, Poison.encode!(%{"mash-temperature" => new_temperature}))
   end
 
@@ -32,7 +31,12 @@ defmodule Brewberry.Router do
 
   post "/controller" do
     new_controller_state = conn.params["set"]
-    send_resp(conn, 200, Poison.encode!(%{"controller" => new_controller_state}))
+    if new_controller_state do
+      Brewberry.Controller.resume
+    else
+      Brewberry.Controller.pause
+    end
+    send_resp(conn, 201, Poison.encode!(%{"controller" => new_controller_state}))
   end
 
   get "/logger" do
@@ -42,22 +46,14 @@ defmodule Brewberry.Router do
   end
 
   defp send_events(conn, id \\ 0) do
-    data = %Sample{
-      :time => local_iso_date,
-      :temperature => 12,
-      :heater => false,
-      :controller => "Live",
-      :"mash-temperature" => 60
-    }
+    %{time: time, heater: heater} = sample = Brewberry.ControllerLoop.state?
 
+    {:ok, dt} = time |> DateTime.from_unix
+    data = %{sample | time: dt |> DateTime.to_naive |> NaiveDateTime.to_iso8601, heater: heater == :on}
     send_message(conn, id, data)
     :timer.sleep(1000)
 
     send_events(conn, id + 1)
-  end
-
-  defp local_iso_date do
-    DateTime.utc_now() |> DateTime.to_naive() |> NaiveDateTime.to_iso8601()
   end
 
   defp send_message(conn, id, data) do
