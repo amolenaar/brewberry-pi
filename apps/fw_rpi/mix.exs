@@ -1,7 +1,7 @@
 defmodule FwRpi.Mixfile do
   use Mix.Project
 
-  @target System.get_env("NERVES_TARGET") || "rpi"
+  @target "rpi"
 
   def project do
     [app: :fw_rpi,
@@ -25,11 +25,12 @@ defmodule FwRpi.Mixfile do
   # Type `mix help compile.app` for more information.
   def application do
     [mod: {Brewberry.FwRpi, []},
-     applications: [:logger, :ctrl, :web]]
+     applications: [:logger, :nerves_networking, :ctrl, :web, :poison]]
   end
 
   def deps do
     [{:nerves, "~> 0.4.0"},
+     {:nerves_networking, "~> 0.6.0"},
      {:ctrl, in_umbrella: true},
      {:web, in_umbrella: true }]
   end
