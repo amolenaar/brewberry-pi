@@ -25,7 +25,7 @@ defmodule FwRpi.Mixfile do
   # Type `mix help compile.app` for more information.
   def application do
     [mod: {Brewberry.FwRpi, []},
-     applications: [:logger]]
+     applications: [:logger, :ctrl, :web]]
   end
 
   def deps do
