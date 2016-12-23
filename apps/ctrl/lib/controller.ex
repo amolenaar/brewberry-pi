@@ -6,7 +6,7 @@ defmodule Brewberry.Controller do
               ,---------.
               v         |
              Idle ----->|
-              | :start  |
+      :resume |         |
               v         |
         ,-> Resting --->|
         |     | dT>0.1  |
@@ -14,7 +14,7 @@ defmodule Brewberry.Controller do
         |   Heating --->|
         |     | dt=0    |
         |     v         |
-        |   Slacking ---' :stop
+        |   Slacking ---' :pause
         |     | dT<0.05
         `-----'
 
@@ -135,27 +135,23 @@ defmodule Brewberry.Controller do
   @doc """
   Starts the registry.
   """
-  def start_link do
-    start_link(%Config{})
+  def start_link(config \\ %Config{}, name \\ __MODULE__) do
+    GenServer.start_link(Server, config, [name: name])
   end
 
-  def start_link(config) do
-    GenServer.start_link(Server, config, [name: __MODULE__])
+  def resume(controller \\ __MODULE__) do
+    GenServer.cast(controller, :resume)
   end
 
-  def resume do
-    GenServer.cast(__MODULE__, :resume)
-  end
-
-  def pause do
-    GenServer.cast(__MODULE__, :pause)
+  def pause(controller \\ __MODULE__) do
+    GenServer.cast(controller, :pause)
   end
 
   @doc """
   Ensures there is a bucket associated to the given `name` in `server`.
   """
-  def update_sample(sample) do
-    GenServer.call(__MODULE__, sample)
+  def update_sample(controller \\ __MODULE__, sample) do
+    GenServer.call(controller, sample)
   end
 
 end

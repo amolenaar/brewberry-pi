@@ -30,12 +30,12 @@ defmodule Brewberry.Measure do
   end
 
 
-  def start_link(backend \\ FakeBackend) do
-    GenServer.start_link(__MODULE__, backend, [name: __MODULE__])
+  def start_link(backend \\ FakeBackend, name \\ __MODULE__) do
+    GenServer.start_link(__MODULE__, backend, [name: name])
   end
 
-  def update_sample(sample) do
-    GenServer.call(__MODULE__, sample)
+  def update_sample(measure \\ __MODULE__, sample) do
+    GenServer.call(measure, sample)
   end
 
 
