@@ -1,4 +1,4 @@
-defmodule Brewberry.FwRpi do
+defmodule Rpi.FwRpi do
   use Application
 
   alias Nerves.Networking
