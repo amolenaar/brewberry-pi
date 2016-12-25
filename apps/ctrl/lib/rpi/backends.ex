@@ -1,9 +1,9 @@
-defmodule Backends do
+defmodule Brewberry.Rpi.Backends do
   @moduledoc """
   Raspberry Pi backends for our
   """
 
-  alias Rpi.{ Gpio, W1 }
+  alias Brewberry.Rpi.{ Gpio, W1 }
 
   defmodule HeaterBackend do
     @behaviour Brewberry.Heater.Backend

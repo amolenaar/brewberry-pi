@@ -25,12 +25,19 @@ defmodule FwRpi.Mixfile do
   # Type `mix help compile.app` for more information.
   def application do
     [mod: {Brewberry.FwRpi, []},
-     applications: [:logger, :nerves_networking, :ctrl, :web, :poison]]
+     applications: [
+       :logger,
+       :nerves_networking,
+       :nerves_interim_wifi,
+       :ctrl,
+       :web,
+       :poison]]
   end
 
   def deps do
     [{:nerves, "~> 0.4.0"},
      {:nerves_networking, "~> 0.6.0"},
+     {:nerves_interim_wifi, "~> 0.1.0"},
      {:ctrl, in_umbrella: true},
      {:web, in_umbrella: true }]
   end

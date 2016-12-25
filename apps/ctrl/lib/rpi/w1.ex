@@ -1,4 +1,4 @@
-defmodule Rpi.W1 do
+defmodule Brewberry.Rpi.W1 do
 
   def base_dir, do: "/sys/bus/w1/devices/"
 
