@@ -1,4 +1,4 @@
-defmodule Rpi.FwRpi do
+defmodule Brewberry.FwRpi do
   use Application
 
   alias Nerves.Networking
@@ -7,16 +7,15 @@ defmodule Rpi.FwRpi do
   @wlan_interface :wlan0
 
   def start(_type, _args) do
+#    System.cmd("modprobe", ["8192cu"])
+#    :timer.sleep(250)
+#    System.cmd("/usr/sbin/wpa_supplicant", ["-s", "-B",
+#        "-i", @wlan_interface,
+#        "-D", "wext",
+#        "-c", "/etc/wpa_supplicant.conf"])
+#    :timer.sleep(500)
 
-    Task.start_link(fn -> Networking.setup @lan_interface end)
-    Task.start_link(fn ->
-      System.cmd("modprobe", ["8192uc"])
-      System.cmd("/sbin/wpa_supplicant", ["-s", "-B",
-          "-P", "/run/wpa_supplicant.wlan0.pid",
-          "-i", @wlan_interface,
-          "-D", "nl80211,wext",
-          "-c", "/etc/wpa_supplicant/wpa_supplicant.conf"])
-      Networking.setup @wlan_interface end)
+#    Networking.setup @wlan_interface
 
     {:ok, self}
   end

@@ -9,15 +9,15 @@ defmodule FwRpi.Mixfile do
      target: @target,
      archives: [nerves_bootstrap: "~> 0.2.1"],
 
-     deps_path: "../../deps/#{@target}",
-     build_path: "../../_build/#{@target}",
+     deps_path: "../../deps",
+     build_path: "../../_build",
      config_path: "../../config/config.exs",
      lockfile: "../../mix.lock",
 
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
      aliases: aliases(),
-     deps: deps() ++ system(@target)]
+     deps: deps() ++ system()]
   end
 
   # Configuration for the OTP application.
@@ -28,22 +28,19 @@ defmodule FwRpi.Mixfile do
      applications: [
        :logger,
        :nerves_networking,
-       :nerves_interim_wifi,
        :ctrl,
-       :web,
-       :poison]]
+       :web]]
   end
 
   def deps do
     [{:nerves, "~> 0.4.0"},
      {:nerves_networking, "~> 0.6.0"},
-     {:nerves_interim_wifi, "~> 0.1.0"},
      {:ctrl, in_umbrella: true},
      {:web, in_umbrella: true }]
   end
 
-  def system(target) do
-    [{:"nerves_system_#{target}", ">= 0.0.0"}]
+  def system do
+    [{:"nerves_system_rpi", github: "amolenaar/nerves_system_rpi", branch: "8192cu"}]
   end
 
   def aliases do

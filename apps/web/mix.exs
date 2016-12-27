@@ -11,11 +11,11 @@ defmodule Web.Mixfile do
      elixir: "~> 1.3",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
-     deps: deps]
+     deps: deps()]
   end
 
   def application do
-    [applications: [:cowboy, :logger, :plug, :plug_redirect, :ctrl],
+    [applications: [:cowboy, :logger, :plug, :plug_redirect, :poison, :ctrl],
     mod: {Brewberry.Web, []},
     env: [cowboy_port: 8080]]
   end
