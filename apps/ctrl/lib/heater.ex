@@ -12,6 +12,7 @@ defmodule Brewberry.Heater do
     Deal with heater I/O. Should return `:on` or `:off`,
     depending of (new) state of the heater.
     """
+    @callback init() :: atom
     @callback on!() :: atom
     @callback off!() :: atom
   end
@@ -22,19 +23,24 @@ defmodule Brewberry.Heater do
     @behaviour Backend
     require Logger
 
+    def init do
+      :ok
+    end
+
     def on! do
-#      Logger.info("Heater is :on")
       :on
     end
 
     def off! do
-#      Logger.info("Heater is :off")
       :off
     end
   end
 
   def start_link(backend) do
-    Agent.start_link(fn -> backend end, name: __MODULE__)
+    Agent.start_link(fn ->
+      :ok = backend.init()
+      backend
+    end, name: __MODULE__)
   end
 
   @doc "Handle `:heating` mode"

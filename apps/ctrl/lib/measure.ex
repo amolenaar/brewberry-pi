@@ -12,12 +12,17 @@ defmodule Brewberry.Measure do
   """
 
   defmodule Backend do
+    @callback init() :: atom
     @callback temperature?() :: float
     @callback time?() :: DateTime
   end
 
   defmodule FakeBackend do
     @behaviour Backend
+
+    def init do
+      :ok
+    end
 
     def temperature? do
       time = DateTime.utc_now |> DateTime.to_unix
@@ -42,6 +47,7 @@ defmodule Brewberry.Measure do
   ## Server side:
 
   def init(backend) do
+    :ok = backend.init()
     {:ok, backend}
   end
 

@@ -1,6 +1,6 @@
 defmodule Brewberry.Rpi.Backends do
   @moduledoc """
-  Raspberry Pi backends for our
+  Raspberry Pi backends.
   """
 
   alias Brewberry.Rpi.{ Gpio, W1 }
@@ -12,6 +12,7 @@ defmodule Brewberry.Rpi.Backends do
 
     def init do
       Gpio.output_pin @pin
+      :ok
     end
 
     def on! do
@@ -26,6 +27,10 @@ defmodule Brewberry.Rpi.Backends do
 
   defmodule MeasureBackend do
     @behaviour Brewberry.Measure.Backend
+
+    def init do
+      :ok
+    end
 
     def temperature? do
       W1.read W1.sensor
