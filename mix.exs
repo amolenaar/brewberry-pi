@@ -22,7 +22,7 @@ defmodule Brewberry.Mixfile do
   # and cannot be accessed from applications inside the apps folder
   defp deps do
     [
-      {:credo, "~> 0.5.3"}
+      {:credo, "~> 0.5.3", only: :dev}
     ]
   end
 end
