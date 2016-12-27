@@ -3,18 +3,22 @@ defmodule Rpi.FwRpi do
 
   alias Nerves.Networking
 
-  @interface :eth0
+  @lan_interface :eth0
+  @wlan_interface :wlan0
 
   def start(_type, _args) do
-    import Supervisor.Spec, warn: false
 
-    children = [
-      worker(Networking.Server, [@interface], id: @interface, restart: :permanent),
-      # Add WLAN config
-    ]
+    Task.start_link(fn -> Networking.setup @lan_interface end)
+    Task.start_link(fn ->
+      System.cmd("modprobe", ["8192uc"])
+      System.cmd("/sbin/wpa_supplicant", ["-s", "-B",
+          "-P", "/run/wpa_supplicant.wlan0.pid",
+          "-i", @wlan_interface,
+          "-D", "nl80211,wext",
+          "-c", "/etc/wpa_supplicant/wpa_supplicant.conf"])
+      Networking.setup @wlan_interface end)
 
-    opts = [strategy: :rest_for_one, name: Brewberry.FwPri]
-    Supervisor.start_link(children, opts)
+    {:ok, self}
   end
 
 end
