@@ -8,6 +8,7 @@ defmodule Brewberry.FwRpi do
 
   def start(_type, _args) do
     start_wifi
+    network_time
     {:ok, self}
   end
 
@@ -25,5 +26,9 @@ defmodule Brewberry.FwRpi do
 
       Networking.setup @wlan_interface
     end
+  end
+
+  def network_time do
+    System.cmd("/usr/sbin/ntpd", ["-g"])
   end
 end
