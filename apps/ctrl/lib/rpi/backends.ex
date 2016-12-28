@@ -17,10 +17,12 @@ defmodule Brewberry.Rpi.Backends do
 
     def on! do
       Gpio.set_pin @pin, :on
+      :on
     end
 
     def off! do
       Gpio.set_pin @pin, :off
+      :off
     end
   end
 

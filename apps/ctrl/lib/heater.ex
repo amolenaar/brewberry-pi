@@ -21,7 +21,6 @@ defmodule Brewberry.Heater do
 
   defmodule FakeBackend do
     @behaviour Backend
-    require Logger
 
     def init do
       :ok

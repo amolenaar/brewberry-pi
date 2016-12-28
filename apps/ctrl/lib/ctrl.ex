@@ -12,7 +12,7 @@ defmodule Brewberry.Ctrl do
   @measure_backend Application.get_env(:ctrl, :measure_backend)
   @heater_backend Application.get_env(:ctrl, :heater_backend)
 
-  def start(_type, []) do
+  def start(_type, _args) do
     import Supervisor.Spec, warn: false
 
     children = [
