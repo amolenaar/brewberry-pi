@@ -14,11 +14,11 @@ defmodule MeasureTest do
   end
 
   test "temperature can be set" do
-        {:ok, measure} = Measure.start_link(StaticBackend, :for_testing)
-        %{temperature: temperature, time: time} = Measure.update_sample(measure, %Sample{})
+    {:ok, measure} = Measure.start_link(StaticBackend, :for_testing)
+    %{temperature: temperature, time: time} = Measure.update_sample(measure, %Sample{})
 
-        assert time == 12345
-        assert temperature == 42
+    assert time == 12345
+    assert temperature == 42
   end
 
 end

@@ -7,13 +7,13 @@ defmodule MashTemperatureTest do
   alias Brewberry.Sample
 
   test "temperature can be set" do
-        MashTemperature.start_link
-        %{mash_temperature: 0} = MashTemperature.update_sample(%Sample{})
+    MashTemperature.start_link
+    %{mash_temperature: 0} = MashTemperature.update_sample(%Sample{})
 
-        MashTemperature.set!(42)
+    MashTemperature.set!(42)
 
-        %{mash_temperature: t} = MashTemperature.update_sample(%Sample{})
-        assert t == 42
+    %{mash_temperature: t} = MashTemperature.update_sample(%Sample{})
+    assert t == 42
   end
 
 end
