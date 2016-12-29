@@ -8,7 +8,7 @@ defmodule MeasureTest do
 
   defmodule StaticBackend do
     @behaviour Brewberry.Measure.Backend
-    def init do: :ok
+    def init, do: :ok
     def temperature?, do: 42
     def time?, do: 12345
   end
