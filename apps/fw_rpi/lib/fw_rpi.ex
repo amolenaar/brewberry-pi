@@ -7,7 +7,7 @@ defmodule Brewberry.FwRpi do
   @wlan_interface :wlan0
 
   def start(_type, _args) do
-    if File.exists?("/sbin/modprobe") do
+    if File.exists?("/etc/wpa_supplicant.conf") do
       start_wifi
       network_time
     end
