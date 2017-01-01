@@ -46,11 +46,7 @@ defmodule Brewberry.Router do
   end
 
   defp send_events(conn, id \\ 0) do
-    %{time: time, heater: heater} = sample = Brewberry.ControllerLoop.state?
-
-    {:ok, dt} = time |> DateTime.from_unix
-    data = %{sample | time: dt |> DateTime.to_naive |> NaiveDateTime.to_iso8601, heater: heater == :on}
-    send_message(conn, id, data)
+    send_message(conn, id, Brewberry.ControllerLoop.state?)
     :timer.sleep(1000)
 
     send_events(conn, id + 1)

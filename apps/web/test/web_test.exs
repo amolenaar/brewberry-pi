@@ -5,6 +5,7 @@ defmodule WebTest do
   @moduletag :capture_log
 
   alias Brewberry.Router
+  alias Brewberry.Sample
 
   @opts Router.init([])
 
@@ -45,6 +46,12 @@ defmodule WebTest do
     assert conn.state == :sent
     assert conn.status == 200
     assert conn.resp_body == "{\"mash-temperature\":42}"
+  end
+
+  test "sample serialization" do
+    json = Poison.encode!(%Sample{time: 1234567, mash_temperature: 60, temperature: 40, heater: :on, mode: :heating})
+
+    assert json == "{\"time\":\"1970-01-15T06:56:07\",\"temperature\":40,\"mode\":\"heating\",\"mash_temperature\":60,\"heater\":true}"
   end
 
 #  xtest "get logging data" do
