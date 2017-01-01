@@ -3,10 +3,15 @@
 This repo contains the code of my brewberry-&pi; home brew software,
 built with Elixir.
 
+ * run `mix deps.get`
+ * `iex -S mix` will lauch the app and open a console, so you can tinker around
+ * Open a browser on http://localhost:8080, the (web) app will be running there in "fake" mode
+ 
 # Firmware
 
 To build an image for the Raspberry Pi (model B):
 
+  * Ensure Nerves stuff is installed on your machine, check out the Nerves getting started guide
   * Install dependencies with `mix deps.get`
   * Go to the firmware application with `cd apps/fw_rpi`
   * Copy `rootfs-additions/etc/wpa_supplicant.conf.example` to
@@ -15,9 +20,9 @@ To build an image for the Raspberry Pi (model B):
   * Create firmware with `mix firmware`
   * Burn to an SD card with `mix firmware.burn`
 
+
 ## Learn more
 
-  * Official docs: https://hexdocs.pm/nerves/getting-started.html
-  * Official website: http://www.nerves-project.org/
-  * Discussion Slack elixir-lang #nerves ([Invite](https://elixir-slackin.herokuapp.com/))
-  * Source: https://github.com/nerves-project/nerves
+  * Elixir: http://elixir-lang.com
+  * Nerves docs: https://hexdocs.pm/nerves/getting-started.html
+  * Nerves website: http://www.nerves-project.org/
