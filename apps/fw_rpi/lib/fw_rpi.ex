@@ -30,4 +30,7 @@ defmodule Brewberry.FwRpi do
   def network_time do
     System.cmd("/usr/sbin/ntpd", ["-g"])
   end
+
+  @dialyzer {:nowarn_function, start_wifi: 0}
+
 end

@@ -12,9 +12,9 @@ defmodule Brewberry.Heater do
     Deal with heater I/O. Should return `:on` or `:off`,
     depending of (new) state of the heater.
     """
-    @callback init() :: atom
-    @callback on!() :: atom
-    @callback off!() :: atom
+    @callback init() :: :ok
+    @callback on!() :: :on
+    @callback off!() :: :off
   end
 
   alias Brewberry.Sample

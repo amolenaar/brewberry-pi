@@ -12,9 +12,9 @@ defmodule Brewberry.Measure do
   """
 
   defmodule Backend do
-    @callback init() :: atom
+    @callback init() :: :ok
     @callback temperature?() :: float
-    @callback time?() :: DateTime
+    @callback time?() :: non_neg_integer
   end
 
   defmodule FakeBackend do
