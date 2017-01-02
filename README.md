@@ -1,4 +1,4 @@
-# Brewberry &pi;
+# Brewberry &pi; [![Build Status](https://travis-ci.org/amolenaar/elixir-brewberry-pi.svg?branch=master)](https://travis-ci.org/amolenaar/elixir-brewberry-pi)
 
 This repo contains the code of my brewberry-&pi; home brew software,
 built with Elixir.
