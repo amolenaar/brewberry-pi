@@ -12,7 +12,7 @@ defmodule Brewberry.Web do
     port = Application.get_env(:web, :cowboy_port, 8080)
 
     children = [
-      Cowboy.child_spec(:http, Router, [], port: port),
+      Cowboy.child_spec(:http, Router, [], port: port, acceptors: 10),
       worker(Task, [fn -> Brewberry.ControllerLoop.run_infinite! end])
     ]
 
