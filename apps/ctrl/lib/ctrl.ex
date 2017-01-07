@@ -12,15 +12,23 @@ defmodule Brewberry.Ctrl do
   @measure_backend Application.get_env(:ctrl, :measure_backend)
   @heater_backend Application.get_env(:ctrl, :heater_backend)
 
+  @doc """
+  Entrypoint for the Ctrl (controller) application.
+
+  Set the mash temperature with `Brewberry.MashTemperature.set!`.
+  Read the actual state via `Brewberry.ControllerLoop.state?`.
+  The controller can be switched on and off by calling
+  `Brewberry.Controller.resume` and `pause`.
+  """
   def start(_type, _args) do
     import Supervisor.Spec, warn: false
 
     children = [
-      worker(ControllerLoop, [], restart: :permanent),
       worker(Measure, [@measure_backend], restart: :permanent),
       worker(MashTemperature, [], restart: :permanent),
       worker(Controller, [], restart: :permanent),
       worker(Heater, [@heater_backend], restart: :permanent),
+      worker(ControllerLoop, [], restart: :permanent)
     ]
 
     opts = [strategy: :rest_for_one, name: Brewberry.Ctrl]
