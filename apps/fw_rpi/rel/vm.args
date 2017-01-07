@@ -1,4 +1,6 @@
 ## Start the Elixir shell
 -noshell
+-sname brewberry
+-setcookie brewberry-secret
 -user Elixir.IEx.CLI
 -extra --no-halt
