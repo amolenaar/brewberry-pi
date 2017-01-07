@@ -22,14 +22,8 @@ defmodule Brewberry.Heater do
   defmodule FakeBackend do
     @behaviour Backend
 
-    def init do
-      :ok
-    end
-
-    def on! do
-      :on
-    end
-
+    def init, do: :ok
+    def on!, do: :on
     def off! do
       :off
     end

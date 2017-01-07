@@ -17,9 +17,9 @@ defmodule Brewberry.ControllerLoop do
   end
 
   def run_infinite! do
-    run!
+    run!()
     :timer.sleep(2000)
-    run_infinite!
+    run_infinite!()
   end
 
   ## Server callbacks:
