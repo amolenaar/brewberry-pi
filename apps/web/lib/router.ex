@@ -36,7 +36,7 @@ defmodule Brewberry.Router do
     else
       Brewberry.Controller.pause
     end
-    send_resp(conn, 201, Poison.encode!(%{"controller" => new_controller_state}))
+    send_resp(conn, 200, Poison.encode!(%{"controller" => new_controller_state}))
   end
 
   get "/logger" do
