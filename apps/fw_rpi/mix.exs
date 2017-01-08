@@ -40,7 +40,7 @@ defmodule FwRpi.Mixfile do
   end
 
   def system do
-    [{:"nerves_system_rpi", github: "amolenaar/nerves_system_rpi", branch: "8192cu"}]
+    [{:nerves_system_rpi, github: "amolenaar/nerves_system_rpi", branch: "8192cu"}]
   end
 
   def aliases do
