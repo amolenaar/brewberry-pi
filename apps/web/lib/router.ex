@@ -31,7 +31,7 @@ defmodule Brewberry.Router do
 
   post "/controller" do
     new_controller_state = conn.params["set"]
-    if new_controller_state do
+    if new_controller_state == "on" do
       Brewberry.Controller.resume
     else
       Brewberry.Controller.pause
