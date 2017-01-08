@@ -33,7 +33,7 @@ defmodule FwRpi.Mixfile do
   end
 
   def deps do
-    [{:nerves, "~> 0.4.0"},
+    [{:nerves, "~> 0.4.5"},
      {:nerves_networking, "~> 0.6.0"},
      {:ctrl, in_umbrella: true},
      {:web, in_umbrella: true }]
