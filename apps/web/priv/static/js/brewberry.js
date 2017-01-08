@@ -41,6 +41,10 @@ function Logger() {
         self.on("sample", callback);
     };
 
+    this.onSampleOnce = function (callback) {
+        self.one("sample", callback);
+    };
+
     this.onlineCheck();
 }
 
@@ -102,30 +106,29 @@ $(function () {
 
     /* Controls */
     var temperatureDisplay = $("#temperature"),
-        turnOnButton = $("#turn-on"),
-        turnOffButton = $("#turn-off"),
+        turnOnOffButton = $("#turn-on-off"),
         setTemperatureButton = $("#set-temperature"),
         healthDisplay = $("#health");
 
-    logger.onSample(function (sample) {
-        turnOnButton.text(sample.mode);
+    logger.onSampleOnce(function (sample) {
+        setTemperatureButton.val(sample.mash_temperature);
+        turnOnOffButton.prop("checked", sample.mode === "heating");
     });
 
     logger.onSample(function (sample) {
         temperatureDisplay.text(sample.temperature.toFixed(2));
-        healthDisplay.toggleClass("odd").text(new Date().toLocaleTimeString());
+        healthDisplay.toggleClass("odd").text(new Date().toLocaleTimeString() + " / " + sample.mode);
     });
 
-    turnOnButton.click(function () {
-        controls.turnOn();
+    turnOnOffButton.change(function () {
+        if ($(this).is(':checked')) {
+            controls.turnOn();
+        } else {
+            controls.turnOff();
+        }
         // Check logger, re-initiate if needed.
         logger.onlineCheck();
-        turnOnButton.text("...");
-    });
-
-    turnOffButton.click(function () {
-        controls.turnOff();
-        turnOnButton.text("...");
+        // turnOnButton.text("...");
     });
 
     setTemperatureButton.change(function (event) {

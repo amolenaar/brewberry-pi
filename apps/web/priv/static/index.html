@@ -11,9 +11,11 @@
   <div id="container">
 
    <div id="controls">
-    <input class="control" type="number" id="set-temperature" size="4" placeholder="Temp" />
-    <a class="control" id="turn-on" />Start</a>
-    <a class="control" id="turn-off" />Stop</a>
+    <label class="control" for="set-temperature"><input type="number" id="set-temperature" size="4" placeholder="Temp" /> &degC</label>
+   <label class="control switch" for="turn-on-off">
+       <input type="checkbox" id="turn-on-off">
+       <div class="slider round"></div>
+   </label>
    </div>
 
    <div id="logger">
