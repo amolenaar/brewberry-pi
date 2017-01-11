@@ -4,6 +4,8 @@
   "credo": {:hex, :credo, "0.5.3", "0c405b36e7651245a8ed63c09e2d52c2e2b89b6d02b1570c4d611e0fcbecf4a2", [:mix], [{:bunt, "~> 0.1.6", [hex: :bunt, optional: false]}]},
   "dialyxir": {:hex, :dialyxir, "0.4.1", "236056d6acd25f740f336756c0f3b5dd6e2f0156074bc15f3b779aeee15390c8", [:mix], []},
   "distillery": {:hex, :distillery, "1.0.0", "a866a72bf2a3a5f078f5a249017ed951acda88a760d200512f91f585d74db1ec", [:mix], []},
+  "earmark": {:hex, :earmark, "1.0.3", "89bdbaf2aca8bbb5c97d8b3b55c5dd0cff517ecc78d417e87f1d0982e514557b", [:mix], []},
+  "ex_doc": {:hex, :ex_doc, "0.14.5", "c0433c8117e948404d93ca69411dd575ec6be39b47802e81ca8d91017a0cf83c", [:mix], [{:earmark, "~> 1.0", [hex: :earmark, optional: false]}]},
   "mime": {:hex, :mime, "1.0.1", "05c393850524767d13a53627df71beeebb016205eb43bfbd92d14d24ec7a1b51", [:mix], []},
   "nerves": {:hex, :nerves, "0.4.5", "1a82415b7b60fef675a50be85ba8c37b13713d45a47acdded64e6e28ea9309a5", [:mix], [{:distillery, "~> 1.0.0", [hex: :distillery, optional: false]}]},
   "nerves_networking": {:hex, :nerves_networking, "0.6.0", "6de5fc53951d087c8c61ce4ba74b998313e628ff084cd02c9813eb63a79c647f", [:mix], []},
