@@ -24,9 +24,7 @@ defmodule Brewberry.Heater do
 
     def init, do: :ok
     def on!, do: :on
-    def off! do
-      :off
-    end
+    def off!, do: :off
   end
 
   def start_link(backend) do

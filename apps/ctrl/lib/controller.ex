@@ -61,53 +61,51 @@ defmodule Brewberry.Controller do
       {:ok, {:off, [], config}}
     end
 
-   @doc "Start the controller"
+   @doc "Start the controller."
     def handle_cast(:resume, {_on?, samples, config}) do
       {:noreply, {:on, samples, config}}
     end
 
-   @doc "Stop the controller"
+   @doc "Stop the controller."
     def handle_cast(:pause, {_on?, samples, config}) do
       {:noreply, {:off, samples, config}}
     end
 
+    @doc "Set heater mode to idle if the controller is off."
     def handle_call(%Sample{} = sample, _from, {:off = on?, samples, config}) do
       {:reply, %{sample | heater: :off, mode: :idle}, {on?, add_sample(sample, samples), config}}
     end
 
+    @doc "handle temperature change when turned on."
     def handle_call(%Sample{} = sample, _from, {:on = on?, samples, config}) do
       mode = evaluate [sample | samples], config
 
       {:reply, %{sample | mode: mode}, {on?, add_sample(sample, samples), config}}
     end
 
-    def evaluate([%Sample{mode: :idle} | _samples], _config) do
-      :resting
-    end
+    defp evaluate([%Sample{mode: :idle} | _samples], _config),
+      do: :resting
 
-    def evaluate([%Sample{mode: :resting, temperature: temp, mash_temperature: mash_temp} | _samples], _config) do
-      if mash_temp - temp > 0.1, do: :heating, else: :resting
-    end
+    defp evaluate([%Sample{mode: :resting, temperature: temp, mash_temperature: mash_temp} | _samples], _config) when mash_temp - temp > 0.1,
+      do: :heating
 
-    def evaluate([%Sample{mode: :heating, time: now, mash_temperature: mash_temp} | _samples] = samples, config) do
-      %{time: time, temperature: temp} = lookup_sample samples, :heating
+    defp evaluate([%Sample{mode: :resting} | _samples], _config),
+      do: :resting
+
+    defp evaluate([%Sample{mode: :heating, time: now, temperature: temp, mash_temperature: mash_temp} | _samples] = samples, config) do
+      %{time: time} = lookup_sample samples, :heating
       dT = mash_temp - temp
-      if dT < 0 do
+      if dT <= 0 or now >= time + Config.time(config, dT) do
         :slacking
       else
-        end_time = time + Config.time(config, dT)
-        if now >= end_time do
-          :slacking
-        else
-          :heating
-        end
+        :heating
       end
     end
 
-    def evaluate([%Sample{mode: :slacking, time: now, temperature: temp} | _samples] = samples, config) do
+    defp evaluate([%Sample{mode: :slacking, time: now, temperature: temp} | _samples] = samples, config) do
       %{time: time} = lookup_sample samples, :slacking
       end_time = time + config.wait_time
-      %{temperature: prev_temp} = samples |> Enum.take(10) |> List.last
+      %{temperature: prev_temp} = (samples |> Enum.take(10) |> List.last)
       if now > end_time and \
         abs(prev_temp - temp) < 0.05 do
         :resting
@@ -116,18 +114,17 @@ defmodule Brewberry.Controller do
       end
     end
 
-    defp add_sample(sample, samples) do
-      [ sample | samples ] |> Enum.take(4000)
-    end
+    defp add_sample(sample, samples),
+      do: [ sample | samples ] |> Enum.take(4000)
 
-    defp lookup_sample([head | []], _mode) do
-      head
-    end
+    defp lookup_sample([head | []], _mode),
+      do: head
 
-    defp lookup_sample([head | tail], required_mode) do
-      %{mode: mode} = head
-      if mode == required_mode, do: lookup_sample(tail, required_mode), else: head
-    end
+    defp lookup_sample([%Sample{mode: mode} | tail], mode),
+      do: lookup_sample(tail, mode)
+
+    defp lookup_sample([head | _tail], _mode),
+      do: head
 
   end
   ## Client interface
@@ -135,23 +132,19 @@ defmodule Brewberry.Controller do
   @doc """
   Starts the registry.
   """
-  def start_link(config \\ %Config{}, name \\ __MODULE__) do
-    GenServer.start_link(Server, config, [name: name])
-  end
+  def start_link(config \\ %Config{}, name \\ __MODULE__),
+    do: GenServer.start_link(Server, config, [name: name])
 
-  def resume(controller \\ __MODULE__) do
-    GenServer.cast(controller, :resume)
-  end
+  def resume(controller \\ __MODULE__),
+    do: GenServer.cast(controller, :resume)
 
-  def pause(controller \\ __MODULE__) do
-    GenServer.cast(controller, :pause)
-  end
+  def pause(controller \\ __MODULE__),
+    do: GenServer.cast(controller, :pause)
 
   @doc """
   Ensures there is a bucket associated to the given `name` in `server`.
   """
-  def update_sample(controller \\ __MODULE__, sample) do
-    GenServer.call(controller, sample)
-  end
+  def update_sample(controller \\ __MODULE__, sample),
+    do: GenServer.call(controller, sample)
 
 end
