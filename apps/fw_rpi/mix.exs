@@ -7,7 +7,7 @@ defmodule FwRpi.Mixfile do
     [app: :fw_rpi,
      version: "0.1.0",
      target: @target,
-     archives: [nerves_bootstrap: "~> 0.2.1"],
+     archives: [nerves_bootstrap: "~> 0.3.1"],
 
      deps_path: "../../deps",
      build_path: "../../_build",
@@ -33,14 +33,15 @@ defmodule FwRpi.Mixfile do
   end
 
   def deps do
-    [{:nerves, "~> 0.4.5"},
-     {:nerves_networking, "~> 0.6.0"},
+    [{:nerves, "~> 0.5.1"},
+     {:nerves_networking, "~> 0.6.0", warn_missing: false},
      {:ctrl, in_umbrella: true},
      {:web, in_umbrella: true }]
   end
 
   def system do
-    [{:nerves_system_rpi, github: "amolenaar/nerves_system_rpi", branch: "8192cu"}]
+    [{:nerves_runtime, "~> 0.1.0"},
+     {:nerves_system_rpi, github: "amolenaar/nerves_system_rpi", branch: "8192cu"}]
   end
 
   def aliases do
