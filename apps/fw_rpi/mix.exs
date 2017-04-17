@@ -48,7 +48,7 @@ defmodule FwRpi.Mixfile do
   def system("host"), do: []
   def system(_target) do
     [{:nerves_runtime, "~> 0.1.0"},
-     {:nerves_system_rpi, github: "amolenaar/nerves_system_rpi", branch: "8192cu"}]
+     {:nerves_system_rpi, "~> 0.11.0"}]
   end
 
   def aliases("host"), do: []

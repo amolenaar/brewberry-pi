@@ -6,6 +6,14 @@
 # Device tree options are documented at
 # https://github.com/raspberrypi/documentation/blob/master/configuration/device-tree.md
 
+##
+# AJM: I changed this section in the fwup.conf (keep the rest in sync with upstream):
+#
+# file-resource config.txt {
+#     host-path = "${NERVES_APP}/config/rpi/config.txt"
+# }
+##
+
 kernel=zImage
 
 # This, along with the Raspberry Pi "x" firmware is need for the camera
