@@ -12,13 +12,13 @@ built with Elixir.
 To build an image for the Raspberry Pi (model B):
 
   * Ensure Nerves stuff is installed on your machine, check out the Nerves getting started guide
-  * Install dependencies with `mix deps.get`
+  * Install dependencies with `MIX_TARGET=rpi MIX_ENV=prod mix deps.get`
   * Go to the firmware application with `cd apps/fw_rpi`
   * Copy `rootfs-additions/etc/wpa_supplicant.conf.example` to
     `rootfs-additions/etc/wpa_supplicant.conf` and fix the ssid and psk
      properties
-  * Create firmware with `mix firmware`
-  * Burn to an SD card with `mix firmware.burn`
+  * Create firmware with `MIX_TARGET=rpi MIX_ENV=prod mix firmware`
+  * Burn to an SD card with `MIX_TARGET=rpi MIX_ENV=prod mix firmware.burn`
 
 
 ## Learn more
