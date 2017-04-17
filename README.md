@@ -26,3 +26,10 @@ To build an image for the Raspberry Pi (model B):
   * Elixir: http://elixir-lang.com
   * Nerves docs: https://hexdocs.pm/nerves/getting-started.html
   * Nerves website: http://www.nerves-project.org/
+
+## TODO
+
+- [ ] Use default Rpi image. Does NTP work? "~> 0.11.0"
+- [x] Use nerves_firmware_http
+- [ ] Use bootloader from https://github.com/mobileoverlord/bootloader
+
