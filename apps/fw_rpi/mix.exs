@@ -1,7 +1,13 @@
 defmodule FwRpi.Mixfile do
   use Mix.Project
 
-  @target "rpi"
+  @target System.get_env("MIX_TARGET") || "host"
+
+  Mix.shell.info([:green, """
+  Env
+    MIX_TARGET:   #{@target}
+    MIX_ENV:      #{Mix.env}
+  """, :reset])
 
   def project do
     [app: :fw_rpi,
@@ -16,21 +22,20 @@ defmodule FwRpi.Mixfile do
 
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
-     aliases: aliases(),
-     deps: deps() ++ system()]
+     aliases: aliases(@target),
+     deps: deps() ++ system(@target)]
   end
 
   # Configuration for the OTP application.
   #
   # Type `mix help compile.app` for more information.
+  def application("host") do
+    [extra_applications: [:logger]]
+  end
   def application do
     [mod: {Brewberry.FwRpi, []},
-     applications: [
-       :logger,
-       :nerves_networking,
-       :ctrl,
-       :web]]
-  end
+     extra_applications: [:logger]]
+   end
 
   def deps do
     [{:nerves, "~> 0.5.1"},
@@ -39,12 +44,14 @@ defmodule FwRpi.Mixfile do
      {:web, in_umbrella: true }]
   end
 
-  def system do
+  def system("host"), do: []
+  def system(_target) do
     [{:nerves_runtime, "~> 0.1.0"},
      {:nerves_system_rpi, github: "amolenaar/nerves_system_rpi", branch: "8192cu"}]
   end
 
-  def aliases do
+  def aliases("host"), do: []
+  def aliases(_target) do
     ["deps.precompile": ["nerves.precompile", "deps.precompile"],
      "deps.loadpaths":  ["deps.loadpaths", "nerves.loadpaths"]]
   end
