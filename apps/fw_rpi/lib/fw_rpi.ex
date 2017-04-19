@@ -19,7 +19,7 @@ defmodule Brewberry.FwRpi do
 
     System.cmd("/usr/sbin/wpa_supplicant", ["-s", "-B",
         "-i", @wlan_interface,
-        "-D", "wext",
+        "-D", "nl80211,wext",
         "-c", "/etc/wpa_supplicant.conf"])
     :timer.sleep(500)
 
