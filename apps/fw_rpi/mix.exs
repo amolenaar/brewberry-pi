@@ -12,6 +12,7 @@ defmodule FwRpi.Mixfile do
   def project do
     [app: :fw_rpi,
      version: "0.1.0",
+     elixir: "~> 1.4.2",
      target: @target,
      archives: [nerves_bootstrap: "~> 0.3.1"],
 
@@ -46,7 +47,7 @@ defmodule FwRpi.Mixfile do
   end
 
   def system("host"), do: []
-  def system(_target) do
+  def system("rpi") do
     [{:nerves_runtime, "~> 0.1.0"},
      {:nerves_system_rpi, "~> 0.11.0"}]
   end

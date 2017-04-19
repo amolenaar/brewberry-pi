@@ -4,9 +4,10 @@ defmodule Brewberry.FwRpi do
   alias Nerves.Networking
 
   @wlan_interface :wlan0
+  @wpa_supplicant_conf "/etc/wpa_supplicant.conf"
 
   def start(_type, _args) do
-    if File.exists?("/etc/wpa_supplicant.conf") do
+    if File.exists?(@wpa_supplicant_conf) do
       start_wifi()
       network_time()
     end
@@ -14,13 +15,12 @@ defmodule Brewberry.FwRpi do
   end
 
   def start_wifi do
-    System.cmd("/sbin/modprobe", ["8192cu"])
-    :timer.sleep(250)
+    {_, 0} = System.cmd("/sbin/modprobe", ["8192cu"])
 
     System.cmd("/usr/sbin/wpa_supplicant", ["-s", "-B",
         "-i", @wlan_interface,
         "-D", "nl80211,wext",
-        "-c", "/etc/wpa_supplicant.conf"])
+        "-c", @wpa_supplicant_conf])
     :timer.sleep(500)
 
     Networking.setup @wlan_interface

@@ -19,7 +19,7 @@ To build an image for the Raspberry Pi (model B):
      properties
   * Create firmware with `MIX_TARGET=rpi MIX_ENV=prod mix firmware`
   * Burn to an SD card with `MIX_TARGET=rpi MIX_ENV=prod mix firmware.burn`
-
+  * And do remote updates once your first image is up and running: `MIX_TARGET=rpi MIX_ENV=prod mix firmware.push 10.192.168.122 --firmware ../../_build/prod/nerves/images/fw_rpi.fw`
 
 ## Learn more
 
