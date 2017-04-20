@@ -12,14 +12,14 @@ built with Elixir.
 To build an image for the Raspberry Pi (model B):
 
   * Ensure Nerves stuff is installed on your machine, check out the Nerves getting started guide
-  * Install dependencies with `MIX_TARGET=rpi MIX_ENV=prod mix deps.get`
+  * Install dependencies with `MIX_ENV=prod mix deps.get`
   * Go to the firmware application with `cd apps/fw_rpi`
   * Copy `rootfs-additions/etc/wpa_supplicant.conf.example` to
     `rootfs-additions/etc/wpa_supplicant.conf` and fix the ssid and psk
      properties
-  * Create firmware with `MIX_TARGET=rpi MIX_ENV=prod mix firmware`
-  * Burn to an SD card with `MIX_TARGET=rpi MIX_ENV=prod mix firmware.burn`
-  * And do remote updates once your first image is up and running: `MIX_TARGET=rpi MIX_ENV=prod mix firmware.push 10.192.168.122 --firmware ../../_build/prod/nerves/images/fw_rpi.fw`
+  * Create firmware with `MIX_ENV=prod mix firmware`
+  * Burn to an SD card with `MIX_ENV=prod mix firmware.burn`
+  * And do remote updates once your first image is up and running: `MIX_ENV=prod mix firmware.push 10.192.168.122 --firmware ../../_build/prod/nerves/images/fw_rpi.fw`
 
 ## Learn more
 
@@ -29,7 +29,8 @@ To build an image for the Raspberry Pi (model B):
 
 ## TODO
 
-- [ ] Use default Rpi image. Does NTP work? "~> 0.11.0"
+- [x] Use default Rpi image. Does NTP work? "~> 0.11.0"
 - [x] Use nerves_firmware_http
+- [ ] can use rootfs addition for custom config.txt?
 - [ ] Use bootloader from https://github.com/mobileoverlord/bootloader
 

@@ -7,10 +7,8 @@ defmodule Brewberry.FwRpi do
   @wpa_supplicant_conf "/etc/wpa_supplicant.conf"
 
   def start(_type, _args) do
-    if File.exists?(@wpa_supplicant_conf) do
-      start_wifi()
-      network_time()
-    end
+    start_wifi()
+    network_time()
     {:ok, self()}
   end
 
