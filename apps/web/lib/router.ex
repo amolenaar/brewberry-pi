@@ -47,7 +47,7 @@ defmodule Brewberry.Router do
 
   defp send_events(conn, id \\ 0) do
     send_message(conn, id, Brewberry.ControllerLoop.state?)
-    :timer.sleep(2000)
+    :timer.sleep(2100)
 
     send_events(conn, id + 1)
   end
