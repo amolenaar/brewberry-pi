@@ -1,5 +1,6 @@
 defmodule Brewberry.Router do
   use Plug.Router
+  require Logger
 
   @moduledoc false
 
@@ -40,18 +41,22 @@ defmodule Brewberry.Router do
   end
 
   get "/logger" do
+    last_event_id = get_req_header(conn, "last-event-id") || 0
+    IO.puts "last event id: #{last_event_id}"
+
     put_resp_header(conn, "content-type", "text/event-stream")
     |> send_chunked(200)
-    |> send_events
+    |> send_events(last_event_id)
   end
 
-  defp send_events(conn, id \\ 0) do
-    case send_message(conn, id, Brewberry.ControllerLoop.state?) do
-      {:ok, _} ->
-        :timer.sleep(2100)
-        send_events(conn, id + 1)
-      {:error, _} -> conn
-    end
+  defp send_events(conn, id) do
+    Brewberry.Ctrl.stream
+    |> Enum.reduce_while(nil, fn {id, sample}, _acc ->
+         case send_message(conn, id, sample) do
+           {:ok, _}    -> {:cont, nil}
+           {:error, _} -> {:halt, conn}
+         end
+       end)
   end
 
   defp send_message(conn, id, data) do

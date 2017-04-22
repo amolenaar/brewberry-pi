@@ -34,10 +34,18 @@ defmodule Brewberry.ControllerLoop do
       |> Brewberry.Measure.update_sample
       |> Brewberry.MashTemperature.update_sample
       |> Brewberry.Controller.update_sample
-      |> Brewberry.Heater.update_sample}
+      |> Brewberry.Heater.update_sample
+      |> notify}
   end
 
   def handle_call(:state, _from, sample) do
     {:reply, sample, sample}
+  end
+
+  defp notify(sample) do
+    Registry.dispatch(SampleNotification, :sample, fn entries ->
+      for {pid, _} <- entries, do: send(pid, {:sample, sample})
+    end)
+    sample
   end
 end
