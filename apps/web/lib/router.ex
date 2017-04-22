@@ -46,10 +46,12 @@ defmodule Brewberry.Router do
   end
 
   defp send_events(conn, id \\ 0) do
-    send_message(conn, id, Brewberry.ControllerLoop.state?)
-    :timer.sleep(2100)
-
-    send_events(conn, id + 1)
+    case send_message(conn, id, Brewberry.ControllerLoop.state?) do
+      {:ok, _} ->
+        :timer.sleep(2100)
+        send_events(conn, id + 1)
+      {:error, _} -> conn
+    end
   end
 
   defp send_message(conn, id, data) do
