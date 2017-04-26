@@ -1,9 +1,10 @@
 defmodule Brewberry.Controller do
   @moduledoc """
   The controller used to keep my mash at a constant temperature.
-
-
               ,---------.
+              v         |
+             Off        | Off is an internal state.
+              |<--------|
               v         |
              Idle ----->|
       :resume |         |
@@ -52,81 +53,76 @@ defmodule Brewberry.Controller do
 
   alias Brewberry.Sample
 
+  defmodule ServerState do
+    defstruct mode: :off, time: 0, max_temp: 0
+  end
 
   defmodule Server do
     @moduledoc "The Controller process (callbacks)"
     use GenServer
 
     def init(config) do
-      {:ok, {:off, [], config}}
+      {:ok, {%ServerState{}, config}}
     end
 
    @doc "Start the controller."
-    def handle_cast(:resume, {_on?, samples, config}) do
-      {:noreply, {:on, samples, config}}
+    def handle_cast(:resume, {%{mode: :off}=server_state, config}) do
+      {:noreply, {%{server_state | mode: :idle}, config}}
+    end
+
+    def handle_cast(:resume, {server_state, config}) do
+      {:noreply, {server_state, config}}
     end
 
    @doc "Stop the controller."
-    def handle_cast(:pause, {_on?, samples, config}) do
-      {:noreply, {:off, samples, config}}
+    def handle_cast(:pause, {server_state, config}) do
+      {:noreply, {%{server_state | mode: :off}, config}}
     end
 
     @doc "Set heater mode to idle if the controller is off."
-    def handle_call(%Sample{} = sample, _from, {:off = on?, samples, config}) do
-      {:reply, %{sample | heater: :off, mode: :idle}, {on?, add_sample(sample, samples), config}}
+    def handle_call(%Sample{} = sample, _from, {%{mode: :off}, config}) do
+      {:reply, %{sample | heater: :off, mode: :idle}, {%ServerState{mode: :off, time: sample.time}, config}}
     end
 
     @doc "handle temperature change when turned on."
-    def handle_call(%Sample{} = sample, _from, {:on = on?, samples, config}) do
-      mode = evaluate [sample | samples], config
-
-      {:reply, %{sample | mode: mode}, {on?, add_sample(sample, samples), config}}
+    def handle_call(%Sample{} = sample, _from, {server_state, config}) do
+      new_state = evaluate(sample, server_state, config)
+      {:reply, %{sample | mode: new_state.mode}, {new_state, config}}
     end
 
-    defp evaluate([%Sample{mode: :idle} | _samples], _config),
-      do: :resting
+    defp evaluate(%Sample{mode: :idle, time: now}, _server_state, _config),
+      do: %ServerState{mode: :resting, time: now}
 
-    defp evaluate([%Sample{mode: :resting, temperature: temp, mash_temperature: mash_temp} | _samples], _config) when mash_temp - temp > 0.1,
-      do: :heating
+    defp evaluate(%Sample{mode: :resting, time: now, temperature: temp, mash_temperature: mash_temp}, _server_state, _config) when mash_temp - temp > 0.1,
+      do: %ServerState{mode: :heating, time: now}
 
-    defp evaluate([%Sample{mode: :resting} | _samples], _config),
-      do: :resting
+    defp evaluate(%Sample{mode: :resting}, server_state, _config),
+      do: server_state
 
-    defp evaluate([%Sample{mode: :heating, time: now, temperature: temp, mash_temperature: mash_temp} | _samples] = samples, config) do
-      %{time: time} = lookup_sample samples, :heating
+    defp evaluate(%Sample{mode: :heating, time: now, temperature: temp, mash_temperature: mash_temp}, server_state, config) do
+      time = server_state.time
       dT = mash_temp - temp
       if dT <= 0 or now >= time + Config.time(config, dT) do
-        :slacking
+        %ServerState{mode: :slacking, time: now, max_temp: temp}
       else
-        :heating
+        %{server_state | max_temp: max(server_state.max_temp, temp)}
       end
     end
 
-    defp evaluate([%Sample{mode: :slacking, time: now, temperature: temp} | _samples] = samples, config) do
-      %{time: time} = lookup_sample samples, :slacking
+    defp evaluate(%Sample{mode: :slacking, time: now, temperature: temp}, server_state, config) do
+      time = server_state.time
       end_time = time + config.wait_time
-      %{temperature: prev_temp} = (samples |> Enum.take(10) |> List.last)
+      prev_temp = server_state.max_temp
       if now > end_time and \
         abs(prev_temp - temp) < 0.05 do
-        :resting
+        %ServerState{mode: :resting, time: now}
       else
-        :slacking
+        server_state
       end
     end
 
-    defp add_sample(sample, samples),
-      do: [ sample | samples ] |> Enum.take(4000)
-
-    defp lookup_sample([head | []], _mode),
-      do: head
-
-    defp lookup_sample([%Sample{mode: mode} | tail], mode),
-      do: lookup_sample(tail, mode)
-
-    defp lookup_sample([head | _tail], _mode),
-      do: head
-
   end
+
   ## Client interface
 
   @doc """
