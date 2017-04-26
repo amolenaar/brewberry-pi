@@ -55,16 +55,18 @@ defmodule Brewberry.Router do
   end
 
   defp send_past_events(conn, last_event_id) do
-    for {id, sample} <- Brewberry.TimeSeries.get_series(last_event_id) do
-      send_message(conn, id, sample)
-    end
+    chunk(conn,
+      Brewberry.TimeSeries.get_series(last_event_id)
+      |> Enum.map(&encode_event/1)
+      |> Enum.join
+    )
     conn
-  end
+   end
 
   defp send_events(conn) do
     Brewberry.Ctrl.stream
     |> Enum.reduce_while(nil, fn {id, sample}, _acc ->
-         case send_message(conn, id, sample) do
+         case chunk(conn, encode_event({id, sample})) do
            {:ok, _}    -> {:cont, nil}
            {:error, _} -> {:halt, conn}
          end
@@ -75,6 +77,9 @@ defmodule Brewberry.Router do
     encoded_data = Poison.encode!(data)
     chunk(conn, "id: #{id}\nevent: sample\ndata: #{encoded_data}\n\n")
   end
+
+  defp encode_event({id, data}),
+   do: "id: #{id}\nevent: sample\ndata: #{Poison.encode!(data)}\n\n"
 
   # catch-all
   match _ do
