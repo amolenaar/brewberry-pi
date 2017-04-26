@@ -35,11 +35,17 @@ defmodule Brewberry.ControllerLoop do
       |> Brewberry.MashTemperature.update_sample
       |> Brewberry.Controller.update_sample
       |> Brewberry.Heater.update_sample
+      |> update_time_series
       |> notify}
   end
 
   def handle_call(:state, _from, sample) do
     {:reply, sample, sample}
+  end
+
+  defp update_time_series(sample) do
+    Brewberry.TimeSeries.update sample.time, sample
+    sample
   end
 
   defp notify(sample) do

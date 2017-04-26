@@ -41,15 +41,27 @@ defmodule Brewberry.Router do
   end
 
   get "/logger" do
-    last_event_id = get_req_header(conn, "last-event-id") || 0
-    IO.puts "last event id: #{last_event_id}"
+    last_event_id = case get_req_header(conn, "last-event-id") do
+      [id] -> String.to_integer id
+      _ -> 0
+    end
+
+    IO.puts "last event id: #{inspect last_event_id}"
 
     put_resp_header(conn, "content-type", "text/event-stream")
     |> send_chunked(200)
-    |> send_events(last_event_id)
+    |> send_past_events(last_event_id)
+    |> send_events()
   end
 
-  defp send_events(conn, id) do
+  defp send_past_events(conn, last_event_id) do
+    for {id, sample} <- Brewberry.TimeSeries.get_series(last_event_id) do
+      send_message(conn, id, sample)
+    end
+    conn
+  end
+
+  defp send_events(conn) do
     Brewberry.Ctrl.stream
     |> Enum.reduce_while(nil, fn {id, sample}, _acc ->
          case send_message(conn, id, sample) do

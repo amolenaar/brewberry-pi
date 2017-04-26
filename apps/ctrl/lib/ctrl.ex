@@ -8,6 +8,7 @@ defmodule Brewberry.Ctrl do
   alias Brewberry.Heater
   alias Brewberry.MashTemperature
   alias Brewberry.Measure
+  alias Brewberry.TimeSeries
 
   @measure_backend Application.get_env(:ctrl, :measure_backend)
   @heater_backend Application.get_env(:ctrl, :heater_backend)
@@ -29,10 +30,11 @@ defmodule Brewberry.Ctrl do
       worker(Controller, [], restart: :permanent),
       worker(Heater, [@heater_backend], restart: :permanent),
       supervisor(Registry, [:duplicate, SampleNotification], restart: :permanent),
+      worker(TimeSeries, [], restart: :permanent),
       worker(ControllerLoop, [], restart: :permanent)
     ]
 
-    opts = [strategy: :rest_for_one, name: Brewberry.Ctrl]
+    opts = [strategy: :one_for_one, name: Brewberry.Ctrl]
     Supervisor.start_link(children, opts)
   end
 

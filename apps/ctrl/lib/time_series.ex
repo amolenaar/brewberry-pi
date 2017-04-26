@@ -16,7 +16,7 @@ defmodule Brewberry.TimeSeries do
   @doc """
   Obtain a list of series `{timestamp, value}` in ascending order.
   """
-  def get_series(time_series \\ __MODULE__, since \\ 0) do
+  def get_series(time_series \\ __MODULE__, since) do
     GenServer.call(time_series, {:series, since})
   end
 
