@@ -28,7 +28,7 @@ function logChart(element) {
             type: "datetime",
             title: {
                 text: "Time"
-            },
+            }
         }],
         yAxis: [{
             labels: {
@@ -54,7 +54,7 @@ function logChart(element) {
                 text: "",
                 style: {
                     color: "#A74572"
-                },
+                }
             },
             labels: {
                 formatter: function() {
@@ -62,7 +62,7 @@ function logChart(element) {
                 },
                 style: {
                     color: "#A74572"
-                },
+                }
             },
             min: 0,
             max: 1
