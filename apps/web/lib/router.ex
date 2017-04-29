@@ -64,6 +64,7 @@ defmodule Brewberry.Router do
    end
 
   defp send_events(conn) do
+    # TODO: Start a server to handle sample events?
     Brewberry.Ctrl.stream
     |> Enum.reduce_while(nil, fn {id, sample}, _acc ->
          case chunk(conn, encode_event({id, sample})) do
@@ -73,10 +74,8 @@ defmodule Brewberry.Router do
        end)
   end
 
-  defp send_message(conn, id, data) do
-    encoded_data = Poison.encode!(data)
-    chunk(conn, "id: #{id}\nevent: sample\ndata: #{encoded_data}\n\n")
-  end
+  defp send_message(conn, id, data),
+   do: chunk(conn, encode_event({id, data}))
 
   defp encode_event({id, data}),
    do: "id: #{id}\nevent: sample\ndata: #{Poison.encode!(data)}\n\n"
