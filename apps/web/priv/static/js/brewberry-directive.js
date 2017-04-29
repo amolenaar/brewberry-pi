@@ -106,13 +106,14 @@ function addSeries(chart, logger, attrs) {
     
     logger.on("samples", function (samples) {
         if (samples) {
-            var newData = [];
-            $(samples).each(function (i, e) {
-                newData.push([e[x], e[y]]);
-            });
-            series.setData(newData, true);
+            for (var i in samples) {
+                var e = samples[i];
+                series.addPoint([e[x], e[y]], false, false);
+            }
+            series.update();
         }
     });
+
     logger.on("sample", function(sample) {
         if (sample) {
             dropOldData(series, sample[x]);

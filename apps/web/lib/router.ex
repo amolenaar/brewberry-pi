@@ -17,7 +17,7 @@ defmodule Brewberry.Router do
   plug :dispatch
 
   get "/temperature" do
-    send_resp(conn, 200, Poison.encode!(%{"mash-temperature" => 12}))
+    send_resp(conn, 200, Poison.encode!(%{"mash-temperature" => Brewberry.ControllerLoop.state?().mash_temperature}))
   end
 
   post "/temperature" do
@@ -27,7 +27,7 @@ defmodule Brewberry.Router do
   end
 
   get "/controller" do
-    send_resp(conn, 200, Poison.encode!(%{"controller" => "Idle"}))
+    send_resp(conn, 200, Poison.encode!(%{"controller" => Brewberry.ControllerLoop.state?().mode}))
   end
 
   post "/controller" do
@@ -57,8 +57,7 @@ defmodule Brewberry.Router do
   defp send_past_events(conn, last_event_id) do
     chunk(conn,
       Brewberry.TimeSeries.get_series(last_event_id)
-      |> Enum.map(&encode_event/1)
-      |> Enum.join
+      |> encode_events
     )
     conn
    end
@@ -74,11 +73,18 @@ defmodule Brewberry.Router do
        end)
   end
 
-  defp send_message(conn, id, data),
-   do: chunk(conn, encode_event({id, data}))
-
   defp encode_event({id, data}),
    do: "id: #{id}\nevent: sample\ndata: #{Poison.encode!(data)}\n\n"
+
+  defp encode_events([]) do
+    ""
+  end
+
+  defp encode_events(events) do
+    {last_id, _last_data} = List.last(events)
+    {:ok, event_data} = events |> Enum.map(fn {_id, data} -> data end) |> Poison.encode
+    "id: #{last_id}\nevent: samples\ndata: #{event_data}\n\n"
+  end
 
   # catch-all
   match _ do

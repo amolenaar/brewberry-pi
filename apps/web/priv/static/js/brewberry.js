@@ -32,6 +32,16 @@ function Logger() {
                 }
 
             }, false);
+
+            eventSource.addEventListener("samples", function(event) {
+
+                var samples = JSON.parse(event.data);
+                if (samples) {
+                    for (var i in samples) normalizeSample(samples[i]);
+                    self.trigger("samples", samples);
+                }
+
+            }, false);
         }
     };
 
