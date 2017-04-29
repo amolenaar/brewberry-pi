@@ -29,8 +29,5 @@ To build an image for the Raspberry Pi (model B):
 
 ## TODO
 
-- [x] Use default Rpi image. Does NTP work? "~> 0.11.0"
-- [x] Use nerves_firmware_http
-- [ ] can use rootfs addition for custom config.txt?
 - [ ] Use bootloader from https://github.com/mobileoverlord/bootloader
 
