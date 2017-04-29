@@ -36,7 +36,7 @@ defmodule WebTest do
 
     assert conn.state == :sent
     assert conn.status == 200
-    assert conn.resp_body == "{\"mash-temperature\":12}"
+    assert conn.resp_body == "{\"mash-temperature\":0}"
   end
 
   test "set temperature" do
