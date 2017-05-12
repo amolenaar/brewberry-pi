@@ -64,7 +64,7 @@ defmodule Brewberry.Router do
 
   defp send_events(conn) do
     # TODO: Start a server to handle sample events?
-    Brewberry.Ctrl.stream
+    Brewberry.Dispatcher.stream
     |> Enum.reduce_while(nil, fn {id, sample}, _acc ->
          case chunk(conn, encode_event({id, sample})) do
            {:ok, _}    -> {:cont, nil}
