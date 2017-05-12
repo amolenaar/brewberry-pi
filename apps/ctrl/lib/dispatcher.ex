@@ -26,7 +26,7 @@ defmodule Brewberry.Dispatcher do
 
   def listener() do
     receive do
-      {:sample, sample} -> {[{sample.time, sample}], nil}
+      {:"$gen_cast", {:sample, sample}} -> {[{sample.time, sample}], nil}
     end
   end
 
@@ -40,7 +40,7 @@ defmodule Brewberry.Dispatcher do
 
   def notify(sample) do
     Registry.dispatch(@registry, :sample, fn entries ->
-      for {pid, _} <- entries, do: send(pid, {:sample, sample})
+      for {pid, _} <- entries, do: GenServer.cast(pid, {:sample, sample})
     end)
     sample
   end
