@@ -32,7 +32,6 @@ defmodule Brewberry.ControllerLoop do
   def handle_cast(:tick, sample) do
     {:noreply, sample
       |> Brewberry.Measure.update_sample
-      |> Brewberry.MashTemperature.update_sample
       |> Brewberry.ControllerServer.update_sample
       |> Brewberry.Heater.update_sample
       |> update_time_series

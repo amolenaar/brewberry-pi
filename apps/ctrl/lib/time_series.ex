@@ -36,8 +36,12 @@ defmodule Brewberry.TimeSeries do
     {:ok, {[], 0}}
   end
 
-  def handle_cast({:update, {ts, _val}=sample}, {samples, t}) do
-    if ts - @history_sec - @delay_sec >= t, do: truncate(self())
+  def handle_cast({:update, {ts, _val}=sample}, {samples, t}) when ts - @history_sec - @delay_sec >= t do
+    truncate(self())
+    {:noreply, {[sample | samples], t}}
+  end
+
+  def handle_cast({:update, sample}, {samples, t}) do
     {:noreply, {[sample | samples], t}}
   end
 

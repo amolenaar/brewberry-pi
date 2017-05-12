@@ -51,10 +51,13 @@ defmodule Brewberry.Controller do
   alias Brewberry.Sample
   alias Brewberry.Controller
 
-  defstruct [:config, mode: :idle, time: 0, max_temp: 0]
+  defstruct [:config, mode: :idle, time: 0, mash_temp: 0, max_temp: 0]
 
   def new(config \\ Config),
     do: %Controller{config: config}
+
+  def set_mash_temperature(controller, new_mash_temp),
+    do: %{controller | mash_temp: new_mash_temp}
 
   def resume(%{mode: :idle}=controller),
     do: %{controller | mode: :resting}
@@ -67,25 +70,25 @@ defmodule Brewberry.Controller do
 
   def update_sample(controller, sample) do
     new_state = evaluate(controller, sample)
-    {new_state, %{sample | mode: new_state.mode}}
+    {new_state, %{sample | mode: new_state.mode, mash_temperature: new_state.mash_temp}}
   end
 
   @doc "Set heater mode to idle if the controller is off."
-  def evaluate(%{mode: :idle}=controller, %Sample{} = sample),
+  def evaluate(%{mode: :idle}=controller, %Sample{}),
     do: controller
 
   def evaluate(controller, %Sample{mode: :idle, time: now}),
     do: %{controller | mode: :resting, time: now}
 
-  def evaluate(controller, %Sample{mode: :resting, time: now, temperature: temp, mash_temperature: mash_temp}) when mash_temp - temp > 0.1,
+  def evaluate(%{mash_temp: mash_temp} = controller, %Sample{mode: :resting, time: now, temperature: temp}) when mash_temp - temp > 0.1,
     do: %{controller | mode: :heating, time: now}
 
   def evaluate(controller, %Sample{mode: :resting}),
     do: controller
 
-  def evaluate(controller, %Sample{mode: :heating, time: now, temperature: temp, mash_temperature: mash_temp}) do
+  def evaluate(controller, %Sample{mode: :heating, time: now, temperature: temp}) do
     time = controller.time
-    dT = mash_temp - temp
+    dT = controller.mash_temp - temp
     if dT <= 0 or now >= time + Config.time(controller.config, dT) do
       %{controller | mode: :slacking, time: now, max_temp: temp}
     else
@@ -127,6 +130,9 @@ defmodule Brewberry.ControllerServer do
   def pause(controller \\ __MODULE__),
     do: GenServer.cast(controller, :pause)
 
+  def set_mash_temp(controller \\ __MODULE__, new_temp),
+    do: GenServer.cast(controller, {:mash_temp, new_temp})
+
   @doc """
   Ensures there is a bucket associated to the given `name` in `server`.
   """
@@ -144,9 +150,13 @@ defmodule Brewberry.ControllerServer do
     {:noreply, Controller.resume(controller)}
   end
 
- @doc "Stop the controller."
+  @doc "Stop the controller."
   def handle_cast(:pause, controller) do
     {:noreply, Controller.pause(controller)}
+  end
+
+  def handle_cast({:mash_temp, new_temp}, controller) do
+    {:noreply, Controller.set_mash_temp(controller, new_temp)}
   end
 
   @doc "handle temperature change when turned on."
@@ -154,6 +164,5 @@ defmodule Brewberry.ControllerServer do
     {new_state, new_sample} = Controller.update_sample(controller, sample)
     {:reply, new_sample, new_state}
   end
-
 
 end

@@ -7,8 +7,6 @@ defmodule Brewberry.Ctrl do
   alias Brewberry.ControllerLoop
   alias Brewberry.Dispatcher
   alias Brewberry.Heater
-  alias Brewberry.MashTemperature
-  alias Brewberry.Measure
   alias Brewberry.TimeSeries
 
   @heater_backend Application.get_env(:ctrl, :heater_backend)
@@ -25,7 +23,6 @@ defmodule Brewberry.Ctrl do
     import Supervisor.Spec, warn: false
 
     children = [
-      worker(MashTemperature, [], restart: :permanent),
       worker(ControllerServer, [], restart: :permanent),
       worker(Heater, [@heater_backend], restart: :permanent),
       supervisor(Dispatcher, [], restart: :permanent),

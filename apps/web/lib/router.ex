@@ -22,7 +22,7 @@ defmodule Brewberry.Router do
 
   post "/temperature" do
     new_temperature = conn.params["set"]
-    Brewberry.MashTemperature.set!(new_temperature)
+    Brewberry.ControllerServer.set_mash_temp(new_temperature)
     send_resp(conn, 200, Poison.encode!(%{"mash-temperature" => new_temperature}))
   end
 
