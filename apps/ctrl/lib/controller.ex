@@ -52,17 +52,16 @@ defmodule Brewberry.Controller do
   end
 
   alias Brewberry.Sample
+  alias Brewberry.Controller
 
-  defmodule ServerState do
-    defstruct mode: :off, time: 0, max_temp: 0
-  end
+  defstruct mode: :off, time: 0, max_temp: 0
 
   defmodule Server do
     @moduledoc "The Controller process (callbacks)"
     use GenServer
 
     def init(config) do
-      {:ok, {%ServerState{}, config}}
+      {:ok, {%Controller{}, config}}
     end
 
    @doc "Start the controller."
@@ -81,7 +80,7 @@ defmodule Brewberry.Controller do
 
     @doc "Set heater mode to idle if the controller is off."
     def handle_call(%Sample{} = sample, _from, {%{mode: :off}, config}) do
-      {:reply, %{sample | heater: :off, mode: :idle}, {%ServerState{mode: :off, time: sample.time}, config}}
+      {:reply, %{sample | heater: :off, mode: :idle}, {%Controller{mode: :off, time: sample.time}, config}}
     end
 
     @doc "handle temperature change when turned on."
@@ -91,10 +90,10 @@ defmodule Brewberry.Controller do
     end
 
     defp evaluate(%Sample{mode: :idle, time: now}, _server_state, _config),
-      do: %ServerState{mode: :resting, time: now}
+      do: %Controller{mode: :resting, time: now}
 
     defp evaluate(%Sample{mode: :resting, time: now, temperature: temp, mash_temperature: mash_temp}, _server_state, _config) when mash_temp - temp > 0.1,
-      do: %ServerState{mode: :heating, time: now}
+      do: %Controller{mode: :heating, time: now}
 
     defp evaluate(%Sample{mode: :resting}, server_state, _config),
       do: server_state
@@ -103,7 +102,7 @@ defmodule Brewberry.Controller do
       time = server_state.time
       dT = mash_temp - temp
       if dT <= 0 or now >= time + Config.time(config, dT) do
-        %ServerState{mode: :slacking, time: now, max_temp: temp}
+        %Controller{mode: :slacking, time: now, max_temp: temp}
       else
         %{server_state | max_temp: max(server_state.max_temp, temp)}
       end
@@ -115,7 +114,7 @@ defmodule Brewberry.Controller do
       prev_temp = server_state.max_temp
       if now > end_time and \
         abs(prev_temp - temp) < 0.05 do
-        %ServerState{mode: :resting, time: now}
+        %Controller{mode: :resting, time: now}
       else
         server_state
       end
