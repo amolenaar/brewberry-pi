@@ -33,9 +33,9 @@ defmodule Brewberry.Router do
   post "/controller" do
     new_controller_state = conn.params["set"]
     if new_controller_state == "on" do
-      Brewberry.Controller.resume
+      Brewberry.ControllerServer.resume
     else
-      Brewberry.Controller.pause
+      Brewberry.ControllerServer.pause
     end
     send_resp(conn, 200, Poison.encode!(%{"controller" => new_controller_state}))
   end

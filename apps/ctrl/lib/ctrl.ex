@@ -3,7 +3,7 @@ defmodule Brewberry.Ctrl do
 
   @moduledoc false
 
-  alias Brewberry.Controller
+  alias Brewberry.ControllerServer
   alias Brewberry.ControllerLoop
   alias Brewberry.Dispatcher
   alias Brewberry.Heater
@@ -26,7 +26,7 @@ defmodule Brewberry.Ctrl do
 
     children = [
       worker(MashTemperature, [], restart: :permanent),
-      worker(Controller, [], restart: :permanent),
+      worker(ControllerServer, [], restart: :permanent),
       worker(Heater, [@heater_backend], restart: :permanent),
       supervisor(Dispatcher, [], restart: :permanent),
       worker(TimeSeries, [], restart: :permanent),

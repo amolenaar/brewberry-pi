@@ -33,7 +33,7 @@ defmodule Brewberry.ControllerLoop do
     {:noreply, sample
       |> Brewberry.Measure.update_sample
       |> Brewberry.MashTemperature.update_sample
-      |> Brewberry.Controller.update_sample
+      |> Brewberry.ControllerServer.update_sample
       |> Brewberry.Heater.update_sample
       |> update_time_series
       |> Brewberry.Dispatcher.notify}

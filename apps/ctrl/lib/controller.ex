@@ -3,9 +3,6 @@ defmodule Brewberry.Controller do
   The controller used to keep my mash at a constant temperature.
               ,---------.
               v         |
-             Off        | Off is an internal state.
-              |<--------|
-              v         |
              Idle ----->|
       :resume |         |
               v         |
@@ -54,81 +51,75 @@ defmodule Brewberry.Controller do
   alias Brewberry.Sample
   alias Brewberry.Controller
 
-  defstruct mode: :off, time: 0, max_temp: 0
+  defstruct [:config, mode: :idle, time: 0, max_temp: 0]
 
-  defmodule Server do
-    @moduledoc "The Controller process (callbacks)"
-    use GenServer
+  def new(config \\ Config),
+    do: %Controller{config: config}
 
-    def init(config) do
-      {:ok, {%Controller{}, config}}
-    end
+  def resume(%{mode: :idle}=controller),
+    do: %{controller | mode: :resting}
 
-   @doc "Start the controller."
-    def handle_cast(:resume, {%{mode: :off}=server_state, config}) do
-      {:noreply, {%{server_state | mode: :idle}, config}}
-    end
+  def resume(controller),
+    do: controller
 
-    def handle_cast(:resume, {server_state, config}) do
-      {:noreply, {server_state, config}}
-    end
+  def pause(controller),
+    do: %{controller | mode: :idle}
 
-   @doc "Stop the controller."
-    def handle_cast(:pause, {server_state, config}) do
-      {:noreply, {%{server_state | mode: :off}, config}}
-    end
-
-    @doc "Set heater mode to idle if the controller is off."
-    def handle_call(%Sample{} = sample, _from, {%{mode: :off}, config}) do
-      {:reply, %{sample | heater: :off, mode: :idle}, {%Controller{mode: :off, time: sample.time}, config}}
-    end
-
-    @doc "handle temperature change when turned on."
-    def handle_call(%Sample{} = sample, _from, {server_state, config}) do
-      new_state = evaluate(sample, server_state, config)
-      {:reply, %{sample | mode: new_state.mode}, {new_state, config}}
-    end
-
-    defp evaluate(%Sample{mode: :idle, time: now}, _server_state, _config),
-      do: %Controller{mode: :resting, time: now}
-
-    defp evaluate(%Sample{mode: :resting, time: now, temperature: temp, mash_temperature: mash_temp}, _server_state, _config) when mash_temp - temp > 0.1,
-      do: %Controller{mode: :heating, time: now}
-
-    defp evaluate(%Sample{mode: :resting}, server_state, _config),
-      do: server_state
-
-    defp evaluate(%Sample{mode: :heating, time: now, temperature: temp, mash_temperature: mash_temp}, server_state, config) do
-      time = server_state.time
-      dT = mash_temp - temp
-      if dT <= 0 or now >= time + Config.time(config, dT) do
-        %Controller{mode: :slacking, time: now, max_temp: temp}
-      else
-        %{server_state | max_temp: max(server_state.max_temp, temp)}
-      end
-    end
-
-    defp evaluate(%Sample{mode: :slacking, time: now, temperature: temp}, server_state, config) do
-      time = server_state.time
-      end_time = time + config.wait_time
-      prev_temp = server_state.max_temp
-      if now > end_time and \
-        abs(prev_temp - temp) < 0.05 do
-        %Controller{mode: :resting, time: now}
-      else
-        server_state
-      end
-    end
-
+  def update_sample(controller, sample) do
+    new_state = evaluate(controller, sample)
+    {new_state, %{sample | mode: new_state.mode}}
   end
+
+  @doc "Set heater mode to idle if the controller is off."
+  def evaluate(%{mode: :idle}=controller, %Sample{} = sample),
+    do: controller
+
+  def evaluate(controller, %Sample{mode: :idle, time: now}),
+    do: %{controller | mode: :resting, time: now}
+
+  def evaluate(controller, %Sample{mode: :resting, time: now, temperature: temp, mash_temperature: mash_temp}) when mash_temp - temp > 0.1,
+    do: %{controller | mode: :heating, time: now}
+
+  def evaluate(controller, %Sample{mode: :resting}),
+    do: controller
+
+  def evaluate(controller, %Sample{mode: :heating, time: now, temperature: temp, mash_temperature: mash_temp}) do
+    time = controller.time
+    dT = mash_temp - temp
+    if dT <= 0 or now >= time + Config.time(controller.config, dT) do
+      %{controller | mode: :slacking, time: now, max_temp: temp}
+    else
+      %{controller | max_temp: max(controller.max_temp, temp)}
+    end
+  end
+
+  def evaluate(controller, %Sample{mode: :slacking, time: now, temperature: temp}) do
+    time = controller.time
+    end_time = time + controller.config.wait_time
+    prev_temp = controller.max_temp
+    if now > end_time and \
+      abs(prev_temp - temp) < 0.05 do
+      %{controller | mode: :resting, time: now}
+    else
+      controller
+    end
+  end
+
+end
+
+
+defmodule Brewberry.ControllerServer do
+  @moduledoc "The Controller process (callbacks)"
+  use GenServer
+
+  alias Brewberry.Sample
+  alias Brewberry.Controller.Config
+  alias Brewberry.Controller
 
   ## Client interface
 
-  @doc """
-  Starts the registry.
-  """
   def start_link(config \\ %Config{}, name \\ __MODULE__),
-    do: GenServer.start_link(Server, config, [name: name])
+    do: GenServer.start_link(__MODULE__, config, [name: name])
 
   def resume(controller \\ __MODULE__),
     do: GenServer.cast(controller, :resume)
@@ -141,5 +132,28 @@ defmodule Brewberry.Controller do
   """
   def update_sample(controller \\ __MODULE__, sample),
     do: GenServer.call(controller, sample)
+
+  ## Server interface
+
+  def init(config) do
+    {:ok, Controller.new(config)}
+  end
+
+ @doc "Start the controller."
+  def handle_cast(:resume, controller) do
+    {:noreply, Controller.resume(controller)}
+  end
+
+ @doc "Stop the controller."
+  def handle_cast(:pause, controller) do
+    {:noreply, Controller.pause(controller)}
+  end
+
+  @doc "handle temperature change when turned on."
+  def handle_call(%Sample{} = sample, _from, controller) do
+    {new_state, new_sample} = Controller.update_sample(controller, sample)
+    {:reply, new_sample, new_state}
+  end
+
 
 end
