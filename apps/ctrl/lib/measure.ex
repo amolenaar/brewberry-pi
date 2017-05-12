@@ -34,25 +34,16 @@ defmodule Brewberry.Measure do
     end
   end
 
-
-  def start_link(backend \\ FakeBackend, name \\ __MODULE__) do
-    GenServer.start_link(__MODULE__, backend, [name: name])
+  defmodule StaticBackend do
+    @behaviour Brewberry.Measure.Backend
+    def init, do: :ok
+    def temperature?, do: 42
+    def time?, do: 12345
   end
 
-  def update_sample(measure \\ __MODULE__, sample) do
-    GenServer.call(measure, sample)
-  end
-
-
-  ## Server side:
-
-  def init(backend) do
-    :ok = backend.init()
-    {:ok, backend}
-  end
-
-  def handle_call(sample, _from, backend) do
-    {:reply, %{sample | time: backend.time?, temperature: backend.temperature?}, backend}
+  def update_sample(sample) do
+    backend = Application.get_env(:ctrl, :measure_backend)
+    %{sample | time: backend.time?, temperature: backend.temperature?}
   end
 
 end

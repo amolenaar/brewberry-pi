@@ -1,3 +1,6 @@
 use Mix.Config
 
-import_config "dev.exs"
+config :ctrl,
+  measure_backend: Brewberry.Measure.StaticBackend,
+  heater_backend:  Brewberry.Heater.FakeBackend
+

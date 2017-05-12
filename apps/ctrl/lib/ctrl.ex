@@ -11,7 +11,6 @@ defmodule Brewberry.Ctrl do
   alias Brewberry.Measure
   alias Brewberry.TimeSeries
 
-  @measure_backend Application.get_env(:ctrl, :measure_backend)
   @heater_backend Application.get_env(:ctrl, :heater_backend)
 
   @doc """
@@ -26,7 +25,6 @@ defmodule Brewberry.Ctrl do
     import Supervisor.Spec, warn: false
 
     children = [
-      worker(Measure, [@measure_backend], restart: :permanent),
       worker(MashTemperature, [], restart: :permanent),
       worker(Controller, [], restart: :permanent),
       worker(Heater, [@heater_backend], restart: :permanent),
