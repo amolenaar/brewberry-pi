@@ -62,17 +62,21 @@ defmodule ControllerTest do
 
   test "controller stops heating if time is over", %{controller: ctrl} do
     # 2 degrees matches 89 seconds of heating
-    {ctrl, _} = Controller.update_sample(ctrl, %Sample{mode: :resting, time: 0, temperature: 58})
-
-    assert {_, %{mode: :slacking}} = Controller.update_sample(ctrl, %Sample{mode: :heating, time: 100, temperature: 58})
+    {ctrl, _} = Controller.update_sample(ctrl, %Sample{time: 0, temperature: 58})
+    assert %{mode: :heating} = ctrl
+    assert {_, %{mode: :slacking}} = Controller.update_sample(ctrl, %Sample{time: 100, temperature: 58})
   end
 
   test "controller keeps slacking until temperature is declining", %{controller: ctrl} do
-    {ctrl, _} = Controller.update_sample(ctrl, %Sample{mode: :idle, time: 0, temperature: 58})
-    # 2 degrees matches 89 seconds of heating
-    {ctrl, _} = Controller.update_sample(ctrl, %Sample{mode: :slacking, time: 0, temperature: 58})
+    {ctrl, _} = Controller.update_sample(ctrl, %Sample{time: 0, temperature: 58})
+    assert %{mode: :heating} = ctrl
 
-    assert {_, %{mode: :resting}} = Controller.update_sample(ctrl, %Sample{mode: :slacking, time: 100, temperature: 58.04})
+    # 2 degrees matches 89 seconds of heating
+    {ctrl, _} = Controller.update_sample(ctrl, %Sample{time: 100, temperature: 58})
+    assert %{mode: :slacking} = ctrl
+
+    # default fixed type for slacking state is 20 seconds
+    assert {_, %{mode: :resting}} = Controller.update_sample(ctrl, %Sample{time: 121, temperature: 58.04})
   end
 
 end

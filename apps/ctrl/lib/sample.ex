@@ -12,4 +12,16 @@ defmodule Brewberry.Sample do
 
   defstruct [:time, :temperature, :heater, :mode, :mash_temperature]
 
+  @type time :: non_neg_integer
+  @type temp :: float | integer
+  @type heater_state :: :on | :off
+  @type mode :: :idle | :heating | :slacking | :resting
+  @type t :: %Brewberry.Sample{
+    time: time,
+    temperature: temp,
+    heater: heater_state,
+    mode: mode,
+    mash_temperature: temp
+  }
+
 end

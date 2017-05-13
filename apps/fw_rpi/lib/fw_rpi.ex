@@ -8,26 +8,34 @@ defmodule Brewberry.FwRpi do
 
   def start(_type, _args) do
     start_wifi()
+    start_network()
     network_time()
     {:ok, self()}
   end
 
+  @spec start_wifi() :: :ok
   def start_wifi do
     {_, 0} = System.cmd("/sbin/modprobe", ["8192cu"])
 
-    System.cmd("/usr/sbin/wpa_supplicant", ["-s", "-B",
-        "-i", @wlan_interface,
+    {_, 0} = System.cmd("/usr/sbin/wpa_supplicant", ["-s", "-B",
+        "-i", Atom.to_string(@wlan_interface),
         "-D", "nl80211,wext",
         "-c", @wpa_supplicant_conf])
     :timer.sleep(500)
+    :ok
+  end
 
-    Networking.setup @wlan_interface
+  @spec start_network() :: :ok
+  def start_network do
+    {:ok, _} = Networking.setup @wlan_interface
+    :ok
   end
 
   def network_time do
-    System.cmd("/usr/sbin/ntpd", ["-g"])
+    {_, 0} = System.cmd("/usr/sbin/ntpd", ["-g"])
+    :ok
   end
 
-  @dialyzer {:nowarn_function, start_wifi: 0}
-
+#  @dialyzer {:nowarn_function, start_network: 0}
+#  @dialyzer {:nowarn_function, start: 2}
 end

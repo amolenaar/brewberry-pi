@@ -13,7 +13,7 @@ defmodule Brewberry.Measure do
 
   defmodule Backend do
     @callback init() :: :ok
-    @callback temperature?() :: float
+    @callback temperature?() :: Brewberry.Sample.temp
     @callback time?() :: non_neg_integer
   end
 
