@@ -1,14 +1,14 @@
-defmodule ClockTest do
+defmodule MetronomeTest do
   use ExUnit.Case
 
   @moduledoc false
 
-  alias Ctrl.Clock
+  alias Ctrl.Metronome
 
   @interval 20
 
   test "clock sends tick on interval" do
-    {:ok, _} = Clock.start_link(self(), @interval, [])
+    {:ok, _} = Metronome.start_link(self(), @interval, [])
 
     assert_receive {:"$gen_cast", {:tick, time1}}, @interval * 2
     assert_receive {:"$gen_cast", {:tick, time2}}, @interval * 2

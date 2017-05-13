@@ -7,6 +7,7 @@ defmodule Ctrl do
   alias Ctrl.ControllerLoop
   alias Ctrl.Dispatcher
   alias Ctrl.Heater
+  alias Ctrl.Metronome
   alias Ctrl.TimeSeries
 
   @heater_backend Application.get_env(:ctrl, :heater_backend)
@@ -28,6 +29,7 @@ defmodule Ctrl do
       supervisor(Dispatcher, [], restart: :permanent),
       worker(TimeSeries, [], restart: :permanent),
       worker(ControllerLoop, [], restart: :permanent)
+      worker(Metronome, [ControllerServer], restart: :permanent)
     ]
 
     opts = [strategy: :one_for_one, name: Ctrl]

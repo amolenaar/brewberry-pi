@@ -1,5 +1,10 @@
-defmodule Ctrl.Clock do
-  @moduledoc false
+defmodule Ctrl.Metronome do
+  @moduledoc """
+  Metronome sends a `:tick` every so many milliseconds (default 2000).
+
+  It does a `GenServer` cast of a `{:tick, time}` message, where time is a
+  `DateTime` instance.
+  """
 
   use GenServer
 
