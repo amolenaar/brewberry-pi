@@ -1,5 +1,5 @@
 defmodule WebTest do
-  use ExUnit.Case, async: true
+  use ExUnit.Case
   use Plug.Test
 
   @moduletag :capture_log

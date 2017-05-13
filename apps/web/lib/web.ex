@@ -12,8 +12,7 @@ defmodule Web do
     port = Application.get_env(:web, :cowboy_port, 8080)
 
     children = [
-      Cowboy.child_spec(:http, Router, [], port: port, acceptors: 10),
-      worker(Task, [fn -> Ctrl.ControllerLoop.run_infinite! end])
+      Cowboy.child_spec(:http, Router, [], port: port, acceptors: 10)
     ]
 
     opts = [strategy: :one_for_one, name: Web]

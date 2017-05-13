@@ -47,10 +47,12 @@ defmodule Ctrl.TimeSeries do
 
   def handle_cast({:update, {ts, _val}=sample}, {samples, t}) when ts - @history_sec - @delay_sec >= t do
     truncate(self())
+    Ctrl.Dispatcher.notify sample
     {:noreply, {[sample | samples], t}}
   end
 
   def handle_cast({:update, sample}, {samples, t}) do
+    Ctrl.Dispatcher.notify sample
     {:noreply, {[sample | samples], t}}
   end
 

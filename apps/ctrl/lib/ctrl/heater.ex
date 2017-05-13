@@ -44,4 +44,21 @@ defmodule Ctrl.Heater do
     %{sample | heater: Agent.get_and_update(__MODULE__, fn backend -> {backend.off!, backend} end)}
   end
 
+  @type t :: %{}
+  @callback new() :: t
+  @callback new() :: t
+
+end
+
+
+# The new code:
+defmodule Ctrl.Heater.Fake do
+  @behaviour Ctrl.Heater
+
+  def new do
+    %{}
+  end
+
+  def update(heater, :heating), do: {heater, :on}
+  def update(heater, _mode   ), do: {heater, :off}
 end

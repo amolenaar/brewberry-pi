@@ -26,7 +26,7 @@ defmodule Ctrl.Dispatcher do
 
   def listener() do
     receive do
-      {:"$gen_cast", {:sample, sample}} -> {[{sample.time, sample}], nil}
+      {:"$gen_cast", {:sample, sample}} -> {[sample], nil}
     end
   end
 

@@ -17,17 +17,17 @@ defmodule Web.Router do
   plug :dispatch
 
   get "/temperature" do
-    send_resp(conn, 200, Poison.encode!(%{"mash-temperature" => Ctrl.ControllerLoop.state?().mash_temperature}))
+    send_resp(conn, 200, Poison.encode!(%{"mash-temperature" => Ctrl.ControllerServer.mash_temperature?}))
   end
 
   post "/temperature" do
     new_temperature = conn.params["set"]
-    Ctrl.ControllerServer.set_mash_temp(new_temperature)
+    Ctrl.ControllerServer.mash_temperature(new_temperature)
     send_resp(conn, 200, Poison.encode!(%{"mash-temperature" => new_temperature}))
   end
 
   get "/controller" do
-    send_resp(conn, 200, Poison.encode!(%{"controller" => Ctrl.ControllerLoop.state?().mode}))
+    send_resp(conn, 200, Poison.encode!(%{"controller" => Ctrl.ControllerServer.mode?}))
   end
 
   post "/controller" do
