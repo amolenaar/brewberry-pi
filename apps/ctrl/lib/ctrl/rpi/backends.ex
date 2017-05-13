@@ -1,12 +1,12 @@
-defmodule Brewberry.Rpi.Backends do
+defmodule Ctrl.Rpi.Backends do
   @moduledoc """
   Raspberry Pi backends.
   """
 
-  alias Brewberry.Rpi.{ Gpio, W1 }
+  alias Ctrl.Rpi.{ Gpio, W1 }
 
   defmodule HeaterBackend do
-    @behaviour Brewberry.Heater.Backend
+    @behaviour Ctrl.Heater.Backend
 
     @pin 17
 
@@ -28,7 +28,7 @@ defmodule Brewberry.Rpi.Backends do
 
 
   defmodule MeasureBackend do
-    @behaviour Brewberry.Measure.Backend
+    @behaviour Ctrl.Measure.Backend
 
     def init do
       :ok

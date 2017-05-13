@@ -1,4 +1,4 @@
-defmodule Brewberry.Sample do
+defmodule Ctrl.Sample do
 
   @moduledoc """
   This module defines what a temperature sample looks like.
@@ -16,7 +16,7 @@ defmodule Brewberry.Sample do
   @type temp :: float | integer
   @type heater_state :: :on | :off
   @type mode :: :idle | :heating | :slacking | :resting
-  @type t :: %Brewberry.Sample{
+  @type t :: %Ctrl.Sample{
     time: time,
     temperature: temp,
     heater: heater_state,

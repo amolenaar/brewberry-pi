@@ -1,4 +1,4 @@
-defmodule Brewberry.Measure do
+defmodule Ctrl.Measure do
   use GenServer
 
   @moduledoc """
@@ -13,7 +13,7 @@ defmodule Brewberry.Measure do
 
   defmodule Backend do
     @callback init() :: :ok
-    @callback temperature?() :: Brewberry.Sample.temp
+    @callback temperature?() :: Ctrl.Sample.temp
     @callback time?() :: non_neg_integer
   end
 
@@ -35,7 +35,7 @@ defmodule Brewberry.Measure do
   end
 
   defmodule StaticBackend do
-    @behaviour Brewberry.Measure.Backend
+    @behaviour Ctrl.Measure.Backend
     def init, do: :ok
     def temperature?, do: 42
     def time?, do: 12345

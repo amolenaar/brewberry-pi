@@ -1,6 +1,6 @@
 use Mix.Config
 
 config :ctrl,
-  measure_backend: Brewberry.Measure.StaticBackend,
-  heater_backend:  Brewberry.Heater.FakeBackend
+  measure_backend: Ctrl.Measure.StaticBackend,
+  heater_backend:  Ctrl.Heater.FakeBackend
 

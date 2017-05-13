@@ -1,4 +1,4 @@
-defmodule Brewberry.Controller do
+defmodule Ctrl.Controller do
   @moduledoc """
   The controller used to keep my mash at a constant temperature.
               ,---------.
@@ -55,8 +55,8 @@ defmodule Brewberry.Controller do
     end
   end
 
-  alias Brewberry.Sample
-  alias Brewberry.Controller
+  alias Ctrl.Sample
+  alias Ctrl.Controller
 
   defstruct config: nil, mode: :idle, since: 0, mash_temp: 0, max_temp: 0
 
@@ -68,7 +68,7 @@ defmodule Brewberry.Controller do
     max_temp: Sample.temp
   }
 
-  @spec new(Brewberry.Controller.Config.t) :: t
+  @spec new(Ctrl.Controller.Config.t) :: t
   def new(config \\ %Config{}),
     do: %Controller{config: config}
 
@@ -129,13 +129,13 @@ defmodule Brewberry.Controller do
 end
 
 
-defmodule Brewberry.ControllerServer do
+defmodule Ctrl.ControllerServer do
   @moduledoc "The Controller process (callbacks)"
   use GenServer
 
-  alias Brewberry.Sample
-  alias Brewberry.Controller.Config
-  alias Brewberry.Controller
+  alias Ctrl.Sample
+  alias Ctrl.Controller.Config
+  alias Ctrl.Controller
 
   ## Client interface
 

@@ -15,9 +15,8 @@ defmodule Web.Mixfile do
   end
 
   def application do
-    [applications: [:cowboy, :logger, :plug, :plug_redirect, :poison, :ctrl],
-    mod: {Brewberry.Web, []},
-    env: [cowboy_port: 8080]]
+    [mod: {Web, []},
+     env: [cowboy_port: 8080]]
   end
 
   defp deps do

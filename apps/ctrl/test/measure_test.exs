@@ -3,8 +3,8 @@ defmodule MeasureTest do
 
   use ExUnit.Case
 
-  alias Brewberry.Measure
-  alias Brewberry.Sample
+  alias Ctrl.Measure
+  alias Ctrl.Sample
 
   test "temperature can be set" do
     %{temperature: temperature, time: time} = Measure.update_sample(%Sample{})

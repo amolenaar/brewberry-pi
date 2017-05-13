@@ -16,7 +16,7 @@ defmodule Ctrl.Mixfile do
 
   def application do
     [applications: [:logger],
-    mod: {Brewberry.Ctrl, []}]
+    mod: {Ctrl, []}]
   end
 
   defp deps do

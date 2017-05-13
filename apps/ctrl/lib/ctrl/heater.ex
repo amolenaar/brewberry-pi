@@ -1,4 +1,4 @@
-defmodule Brewberry.Heater do
+defmodule Ctrl.Heater do
   @moduledoc """
   The heater module turns the actual heater on and off based on the
   mode defined by controller.
@@ -17,7 +17,7 @@ defmodule Brewberry.Heater do
     @callback off!() :: :off
   end
 
-  alias Brewberry.Sample
+  alias Ctrl.Sample
 
   defmodule FakeBackend do
     @behaviour Backend

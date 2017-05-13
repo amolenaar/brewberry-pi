@@ -5,9 +5,9 @@ defmodule HeaterTest do
 
   @moduletag :capture_log
 
-  alias Brewberry.Heater
-  alias Brewberry.Heater.FakeBackend
-  alias Brewberry.Sample
+  alias Ctrl.Heater
+  alias Ctrl.Heater.FakeBackend
+  alias Ctrl.Sample
 
   test "heater can be turned on" do
     Heater.start_link FakeBackend

@@ -1,4 +1,4 @@
-defmodule Brewberry.Router do
+defmodule Web.Router do
   use Plug.Router
   require Logger
 
@@ -9,7 +9,7 @@ defmodule Brewberry.Router do
   end
 
   plug Plug.Logger
-  plug Brewberry.Redirects
+  plug Web.Redirects
   plug Plug.Static, at: "/", from: :web
 
   plug Plug.Parsers, parsers: [:urlencoded, :json], json_decoder: Poison
@@ -17,25 +17,25 @@ defmodule Brewberry.Router do
   plug :dispatch
 
   get "/temperature" do
-    send_resp(conn, 200, Poison.encode!(%{"mash-temperature" => Brewberry.ControllerLoop.state?().mash_temperature}))
+    send_resp(conn, 200, Poison.encode!(%{"mash-temperature" => Ctrl.ControllerLoop.state?().mash_temperature}))
   end
 
   post "/temperature" do
     new_temperature = conn.params["set"]
-    Brewberry.ControllerServer.set_mash_temp(new_temperature)
+    Ctrl.ControllerServer.set_mash_temp(new_temperature)
     send_resp(conn, 200, Poison.encode!(%{"mash-temperature" => new_temperature}))
   end
 
   get "/controller" do
-    send_resp(conn, 200, Poison.encode!(%{"controller" => Brewberry.ControllerLoop.state?().mode}))
+    send_resp(conn, 200, Poison.encode!(%{"controller" => Ctrl.ControllerLoop.state?().mode}))
   end
 
   post "/controller" do
     new_controller_state = conn.params["set"]
     if new_controller_state == "on" do
-      Brewberry.ControllerServer.resume
+      Ctrl.ControllerServer.resume
     else
-      Brewberry.ControllerServer.pause
+      Ctrl.ControllerServer.pause
     end
     send_resp(conn, 200, Poison.encode!(%{"controller" => new_controller_state}))
   end
@@ -56,7 +56,7 @@ defmodule Brewberry.Router do
 
   defp send_past_events(conn, last_event_id) do
     chunk(conn,
-      Brewberry.TimeSeries.get_series(last_event_id)
+      Ctrl.TimeSeries.get_series(last_event_id)
       |> encode_events
     )
     conn
@@ -64,7 +64,7 @@ defmodule Brewberry.Router do
 
   defp send_events(conn) do
     # TODO: Start a server to handle sample events?
-    Brewberry.Dispatcher.stream
+    Ctrl.Dispatcher.stream
     |> Enum.reduce_while(nil, fn {id, sample}, _acc ->
          case chunk(conn, encode_event({id, sample})) do
            {:ok, _}    -> {:cont, nil}

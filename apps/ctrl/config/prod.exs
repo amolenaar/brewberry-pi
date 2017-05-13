@@ -1,6 +1,6 @@
 use Mix.Config
 
 config :ctrl,
-  measure_backend: Brewberry.Rpi.Backends.MeasureBackend,
-  heater_backend:  Brewberry.Rpi.Backends.HeaterBackend
+  measure_backend: Ctrl.Rpi.Backends.MeasureBackend,
+  heater_backend:  Ctrl.Rpi.Backends.HeaterBackend
 

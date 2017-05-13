@@ -37,7 +37,7 @@ defmodule FwRpi.Mixfile do
     [extra_applications: [:logger]]
   end
   def application(_target) do
-    [mod: {Brewberry.FwRpi, []},
+    [mod: {FwRpi, []},
      extra_applications: [:logger]]
    end
 

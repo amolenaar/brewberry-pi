@@ -1,4 +1,4 @@
-defmodule Brewberry.Dispatcher do
+defmodule Ctrl.Dispatcher do
   @moduledoc """
   A Register based dispatcher for samples.
   """

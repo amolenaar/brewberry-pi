@@ -1,12 +1,12 @@
-defmodule Brewberry.TimeSeries do
+defmodule Ctrl.TimeSeries do
   use GenServer
   @moduledoc false
 
   @history_sec 10800 # 3 hours
   @delay_sec 300 # 5 minutes
 
-  def start_link(name \\ __MODULE__) do
-    GenServer.start_link(__MODULE__, nil, [name: name])
+  def start_link(name \\ __MODULE__, dispatcher \\ nil) do
+    GenServer.start_link(__MODULE__, dispatcher, [name: name])
   end
 
   def update(time_series \\ __MODULE__, timestamp, value) do
@@ -34,6 +34,15 @@ defmodule Brewberry.TimeSeries do
   """
   def init(nil) do
     {:ok, {[], 0}}
+  end
+
+  def init(dispatcher) do
+    dispatcher.register()
+    {:ok, {[], 0}}
+  end
+
+  def handle_cast({:sample, sample}, state) do
+    handle_cast({:update, {sample.time, sample}}, state)
   end
 
   def handle_cast({:update, {ts, _val}=sample}, {samples, t}) when ts - @history_sec - @delay_sec >= t do

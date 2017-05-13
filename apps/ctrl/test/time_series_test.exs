@@ -2,7 +2,7 @@ defmodule TimeSeriesTest do
   use ExUnit.Case
   @moduledoc false
 
-  alias Brewberry.TimeSeries
+  alias Ctrl.TimeSeries
 
   @one_hour 3600
   @dummy_val 1

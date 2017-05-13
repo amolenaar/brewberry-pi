@@ -1,9 +1,9 @@
 defmodule ControllerTest do
   use ExUnit.Case
 
-  alias Brewberry.Controller
-  alias Brewberry.Controller.Config
-  alias Brewberry.Sample
+  alias Ctrl.Controller
+  alias Ctrl.Controller.Config
+  alias Ctrl.Sample
 
   doctest Controller
 

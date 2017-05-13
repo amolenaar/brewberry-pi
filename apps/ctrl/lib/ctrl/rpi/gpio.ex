@@ -1,4 +1,4 @@
-defmodule Brewberry.Rpi.Gpio do
+defmodule Ctrl.Rpi.Gpio do
 
   def output_pin(number) do
     if !File.exists?("/sys/class/gpio/gpio#{number}") do

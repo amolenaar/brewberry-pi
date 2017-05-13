@@ -1,4 +1,4 @@
-defmodule Brewberry.Redirects do
+defmodule Web.Redirects do
   use Plug.Redirect
 
   @moduledoc false

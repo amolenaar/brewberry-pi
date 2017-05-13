@@ -1,8 +1,8 @@
-defmodule Brewberry.ControllerLoop do
+defmodule Ctrl.ControllerLoop do
   use GenServer
   @moduledoc false
 
-  alias Brewberry.Sample
+  alias Ctrl.Sample
 
   def start_link do
     GenServer.start_link(__MODULE__, %Sample{}, [name: __MODULE__])
@@ -31,11 +31,11 @@ defmodule Brewberry.ControllerLoop do
 
   def handle_cast(:tick, sample) do
     {:noreply, sample
-      |> Brewberry.Measure.update_sample
-      |> Brewberry.ControllerServer.update_sample
-      |> Brewberry.Heater.update_sample
+      |> Ctrl.Measure.update_sample
+      |> Ctrl.ControllerServer.update_sample
+      |> Ctrl.Heater.update_sample
       |> update_time_series
-      |> Brewberry.Dispatcher.notify}
+      |> Ctrl.Dispatcher.notify}
   end
 
   def handle_call(:state, _from, sample) do
@@ -43,7 +43,7 @@ defmodule Brewberry.ControllerLoop do
   end
 
   defp update_time_series(sample) do
-    Brewberry.TimeSeries.update sample.time, sample
+    Ctrl.TimeSeries.update sample.time, sample
     sample
   end
 

@@ -4,8 +4,8 @@ defmodule WebTest do
 
   @moduletag :capture_log
 
-  alias Brewberry.Router
-  alias Brewberry.Sample
+  alias Web.Router
+  alias Ctrl.Sample
 
   @opts Router.init([])
 

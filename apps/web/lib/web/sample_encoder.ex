@@ -1,7 +1,7 @@
-defimpl Poison.Encoder, for: Brewberry.Sample do
+defimpl Poison.Encoder, for: Ctrl.Sample do
   @moduledoc false
 
-  alias Brewberry.Sample
+  alias Ctrl.Sample
 
   def encode(sample = %Sample{time: time, heater: heater}, options) do
     Poison.Encoder.Map.encode(%{sample |> Map.from_struct |
