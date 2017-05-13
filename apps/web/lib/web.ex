@@ -16,7 +16,7 @@ defmodule Web do
       worker(Task, [fn -> Ctrl.ControllerLoop.run_infinite! end])
     ]
 
-    opts = [strategy: :one_for_one, name: Brewberry.Web]
+    opts = [strategy: :one_for_one, name: Web]
     Supervisor.start_link(children, opts)
   end
 end

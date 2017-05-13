@@ -30,7 +30,7 @@ defmodule Ctrl do
       worker(ControllerLoop, [], restart: :permanent)
     ]
 
-    opts = [strategy: :one_for_one, name: Ctrl.Ctrl]
+    opts = [strategy: :one_for_one, name: Ctrl]
     Supervisor.start_link(children, opts)
   end
 
