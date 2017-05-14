@@ -10,7 +10,7 @@ defmodule ControllerTest do
   setup do
     ctrl = Controller.new(%Config{})
     |> Controller.resume()
-    |> Controller.set_mash_temperature(60)
+    |> Controller.mash_temperature(60)
     {:ok, controller: ctrl}
   end
 
@@ -54,7 +54,7 @@ defmodule ControllerTest do
   test "controller stops heating is mash temperature is lower", %{controller: ctrl} do
     # 2 degrees matches 89 seconds of heating
     {ctrl, _} = Controller.update_sample(ctrl, %Sample{mode: :resting, time: 0, temperature: 58})
-    ctrl = Controller.set_mash_temperature(ctrl, 21)
+    ctrl = Controller.mash_temperature(ctrl, 21)
 
     assert {_, %{mode: :slacking}} = Controller.update_sample(ctrl, %Sample{mode: :heating, time: 2, temperature: 42})
 
