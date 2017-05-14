@@ -63,22 +63,31 @@ defmodule Ctrl.Controller do
 
   @type mode :: :idle | :heating | :slacking | :resting
   @type time :: Ctrl.Metronome.time
+  @type timestamp :: non_neg_integer
   @type temp :: Ctrl.Thermometer.temp
   @opaque t :: %Controller{
     config: Config.t,
     mode: mode,
-    since: time,
+    since: timestamp,
     mash_temp: temp,
     max_temp: temp
   }
 
-  @spec new(Ctrl.Controller.Config.t) :: t
+  @spec new(Config.t) :: t
   def new(config \\ %Config{}),
     do: %Controller{config: config}
 
-  @spec set_mash_temperature(t, temp) :: t
-  def set_mash_temperature(controller, new_mash_temp),
+  @spec mash_temperature(t, temp) :: t
+  def mash_temperature(controller, new_mash_temp),
     do: %{controller | mash_temp: new_mash_temp}
+
+  @spec mash_temperature?(t) :: temp
+  def mash_temperature?(controller),
+    do: controller.mash_temp
+
+  @spec mode?(t) :: mode
+  def mode?(controller),
+    do: controller.mode
 
   @spec resume(t) :: t
   def resume(%{mode: :idle}=controller),

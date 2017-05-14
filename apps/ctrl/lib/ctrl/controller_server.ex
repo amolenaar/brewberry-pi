@@ -48,7 +48,7 @@ defmodule Ctrl.ControllerServer do
   end
 
   def handle_cast({:mash_temp, new_temp}, controller) do
-    {:noreply, Controller.set_mash_temperature(controller, new_temp)}
+    {:noreply, Controller.mash_temperature(controller, new_temp)}
   end
 
   def handle_cast({:tick, now}, controller) do
@@ -58,14 +58,15 @@ defmodule Ctrl.ControllerServer do
 
     new_temp = thermometer_mod.read(temp_sensor)
     controller = Controller.update(controller, now, new_temp)
-    on_off = @heater_mod.update(controller.mode)
+    mode = Controller.mode?(controller)
+    on_off = @heater_mod.update(mode)
 
     sample = %Sample{
       time: now,
       temperature: new_temp,
       heater: on_off,
-      mode: controller.mode,
-      mash_temperature: controller.mash_temp
+      mode: mode,
+      mash_temperature: Controller.mash_temperature?(controller)
     }
 
     Ctrl.TimeSeries.update sample.time, sample

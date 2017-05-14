@@ -1,7 +1,7 @@
 defmodule Ctrl.Thermometer do
   @moduledoc false
 
-  @opaque t :: %{}
+  @opaque t :: map
 
   @type temp :: float | integer
 
