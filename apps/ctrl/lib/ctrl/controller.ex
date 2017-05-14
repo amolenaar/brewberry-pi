@@ -20,43 +20,7 @@ defmodule Ctrl.Controller do
   * `dt` is the time the heater should be heating.
   """
 
-  # TODO: move controller config to config files
-  defmodule Config do
-    @moduledoc """
-    Configuration for the controller.
-    * `power` in watts
-    * `efficiency` is a factor
-    * `volume` in litres
-    * `wait_time` in seconds
-    """
-
-    defstruct power: 2000, efficiency: 0.80, volume: 17, wait_time: 20
-
-    @type t :: %Config{
-      power: pos_integer,    # in Watts
-      efficiency: float,     # factor
-      volume: pos_integer,   # in litres
-      wait_time: pos_integer # in seconds
-    }
-
-    @doc """
-    Calculate the time the heater should be turned on in order to
-    reach the desired temperature.
-
-    Returns the time in seconds the heater should be turned on.
-
-    TODO: use time unit size native to Elixir
-    """
-    def time(config, dtemp) do
-      joules_1_litre = 4186
-
-      (dtemp * joules_1_litre * config.volume) / (config.power * config.efficiency)
-      |> max(config.wait_time)
-      |> round
-    end
-  end
-
-  alias Ctrl.Sample
+  alias Ctrl.BrewHouse
   alias Ctrl.Controller
 
   defstruct config: nil, mode: :idle, since: 0, mash_temp: 0, max_temp: 0
@@ -66,16 +30,16 @@ defmodule Ctrl.Controller do
   @type timestamp :: non_neg_integer
   @type temp :: Ctrl.Thermometer.temp
   @opaque t :: %Controller{
-    config: Config.t,
+    config: BrewHouse.t,
     mode: mode,
     since: timestamp,
     mash_temp: temp,
     max_temp: temp
   }
 
-  @spec new(Config.t) :: t
-  def new(config \\ %Config{}),
-    do: %Controller{config: config}
+  @spec new(BrewHouse.t) :: t
+  def new(brew_house),
+    do: %Controller{config: brew_house}
 
   @spec mash_temperature(t, temp) :: t
   def mash_temperature(controller, new_mash_temp),
@@ -117,7 +81,7 @@ defmodule Ctrl.Controller do
   defp evaluate(%{mode: :heating}=controller, now, temp) do
     since = controller.since
     dT = controller.mash_temp - temp
-    if dT <= 0 or now >= since + Config.time(controller.config, dT) do
+    if dT <= 0 or now >= since + BrewHouse.time(controller.config, dT) do
       %{controller | mode: :slacking, since: now, max_temp: temp}
     else
       %{controller | max_temp: max(controller.max_temp, temp)}

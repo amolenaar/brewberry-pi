@@ -3,7 +3,7 @@ defmodule Ctrl.ControllerServer do
   use GenServer
 
   alias Ctrl.Sample
-  alias Ctrl.Controller.Config
+  alias Ctrl.BrewHouse
   alias Ctrl.Controller
 
   @heater_mod Application.get_env(:ctrl, :heater)
@@ -11,8 +11,8 @@ defmodule Ctrl.ControllerServer do
 
   ## Client interface
 
-  def start_link(config \\ %Config{}, name \\ __MODULE__),
-    do: GenServer.start_link(__MODULE__, config, [name: name])
+  def start_link(),
+    do: GenServer.start_link(__MODULE__, [], [name: __MODULE__])
 
   def resume(controller \\ __MODULE__),
     do: GenServer.cast(controller, :resume)
@@ -32,9 +32,9 @@ defmodule Ctrl.ControllerServer do
 
   ## Server callbacks
 
-  def init(config) do
+  def init([]) do
     @heater_mod.init()
-    {:ok, Controller.new(config)}
+    {:ok, Controller.new(BrewHouse.new)}
   end
 
   @doc "Start the controller."

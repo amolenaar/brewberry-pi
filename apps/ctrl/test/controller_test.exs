@@ -1,28 +1,28 @@
 defmodule ControllerTest do
   use ExUnit.Case
 
+  alias Ctrl.BrewHouse
   alias Ctrl.Controller
-  alias Ctrl.Controller.Config
 
   doctest Controller
 
   setup do
-    ctrl = Controller.new(%Config{})
+    ctrl = Controller.new(BrewHouse.new)
     |> Controller.resume()
     |> Controller.mash_temperature(60)
     {:ok, controller: ctrl}
   end
 
   test "calculate the time the heater should be turned on" do
-    config = %Controller.Config{}
+    config = BrewHouse.new
 
-    assert Controller.Config.time(config, 0) == 20
-    assert Controller.Config.time(config, 2) == 89
-    assert Controller.Config.time(config, 10) == 445
+    assert BrewHouse.time(config, 0) == 20
+    assert BrewHouse.time(config, 2) == 89
+    assert BrewHouse.time(config, 10) == 445
   end
 
   test "controller starts in idle mode" do
-    assert %{mode: :idle} = Controller.new(%Config{})
+    assert %{mode: :idle} = Controller.new(BrewHouse.new)
   end
 
   test "controller turned on starts in resting mode", %{controller: ctrl} do
