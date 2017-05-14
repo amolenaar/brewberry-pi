@@ -5,8 +5,8 @@ defmodule Ctrl.TimeSeries do
   @history_sec 10800 # 3 hours
   @delay_sec 300 # 5 minutes
 
-  def start_link(name \\ __MODULE__, dispatcher \\ nil) do
-    GenServer.start_link(__MODULE__, dispatcher, [name: name])
+  def start_link(name \\ __MODULE__) do
+    GenServer.start_link(__MODULE__, nil, [name: name])
   end
 
   def update(time_series \\ __MODULE__, timestamp, value) do
@@ -20,11 +20,19 @@ defmodule Ctrl.TimeSeries do
     GenServer.call(time_series, {:series, since})
   end
 
+  def last(time_series \\ __MODULE__) do
+    GenServer.call(time_series, :last)
+  end
+
   @doc """
   Truncate the log of sample up back to 3 hours from the most recent sample.
   """
   def truncate(time_series \\ __MODULE__) do
     GenServer.cast(time_series, {:truncate, @history_sec})
+  end
+
+  def stream(time_series \\ __MODULE__) do
+    Ctrl.Dispatcher.stream
   end
 
   ## Server
@@ -33,11 +41,6 @@ defmodule Ctrl.TimeSeries do
   Initialize the server with an empty time series and an oldest sample timestamp.
   """
   def init(nil) do
-    {:ok, {[], 0}}
-  end
-
-  def init(dispatcher) do
-    dispatcher.register()
     {:ok, {[], 0}}
   end
 
@@ -69,5 +72,9 @@ defmodule Ctrl.TimeSeries do
 
   def handle_call({:series, since}, _from, {samples, _t}=state) do
     {:reply, samples |> Enum.take_while(fn {t, _s} -> t > since end) |> Enum.reverse, state}
+  end
+
+  def handle_call(:last, _from, {[sample | _rest], _t}=state) do
+    {:reply, sample, state}
   end
 end

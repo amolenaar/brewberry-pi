@@ -17,7 +17,8 @@ defmodule Web.Router do
   plug :dispatch
 
   get "/temperature" do
-    send_resp(conn, 200, Poison.encode!(%{"mash-temperature" => Ctrl.ControllerServer.mash_temperature?}))
+    {_id, sample} = Ctrl.TimeSeries.last
+    send_resp(conn, 200, Poison.encode!(%{"mash-temperature" => sample.mash_temperature}))
   end
 
   post "/temperature" do
@@ -27,7 +28,8 @@ defmodule Web.Router do
   end
 
   get "/controller" do
-    send_resp(conn, 200, Poison.encode!(%{"controller" => Ctrl.ControllerServer.mode?}))
+    {_id, sample} = Ctrl.TimeSeries.last
+    send_resp(conn, 200, Poison.encode!(%{"controller" => sample.mode}))
   end
 
   post "/controller" do
@@ -63,8 +65,7 @@ defmodule Web.Router do
    end
 
   defp send_events(conn) do
-    # TODO: Start a server to handle sample events?
-    Ctrl.Dispatcher.stream
+    Ctrl.TimeSeries.stream
     |> Enum.reduce_while(nil, fn {id, sample}, _acc ->
          case chunk(conn, encode_event({id, sample})) do
            {:ok, _}    -> {:cont, nil}
