@@ -6,28 +6,7 @@ defmodule Ctrl.Dispatcher do
   @registry SampleNotification
 
   def start_link() do
-    Registry.start_link(:duplicate, @registry)
-  end
-
-  @doc """
-  Register the current process for new samples and state changes on
-  the controller.
-  """
-  def register() do
-    Registry.register(@registry, :sample, [])
-  end
-
-  @doc """
-  Unregister the current process.
-  """
-  def unregister() do
-    Registry.unregister(@registry, :sample)
-  end
-
-  def listener() do
-    receive do
-      {:"$gen_cast", {:sample, sample}} -> {[sample], nil}
-    end
+    GenEvent.start_link([name: @registry])
   end
 
   @doc """
@@ -35,14 +14,11 @@ defmodule Ctrl.Dispatcher do
   A `{id, sample}` tuple is returned.
   """
   def stream do
-    Stream.resource(&register/0, fn (_arg) -> listener() end, fn (_arg) -> unregister() end)
+    GenEvent.stream(@registry)
   end
 
   def notify(sample) do
-    Registry.dispatch(@registry, :sample, fn entries ->
-      for {pid, _} <- entries, do: GenServer.cast(pid, {:sample, sample})
-    end)
-    sample
+    GenEvent.notify(@registry, sample)
   end
 
 end
