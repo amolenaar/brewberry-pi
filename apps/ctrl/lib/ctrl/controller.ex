@@ -61,9 +61,9 @@ defmodule Ctrl.Controller do
 
   defstruct config: nil, mode: :idle, since: 0, mash_temp: 0, max_temp: 0
 
-  @type mode :: Sample.mode
-  @type time :: Sample.time
-  @type temp :: Sample.temp
+  @type mode :: :idle | :heating | :slacking | :resting
+  @type time :: Ctrl.Metronome.time
+  @type temp :: Ctrl.Thermometer.temp
   @opaque t :: %Controller{
     config: Config.t,
     mode: mode,
@@ -98,7 +98,11 @@ defmodule Ctrl.Controller do
     {new_state, %{sample | mode: new_state.mode, mash_temperature: new_state.mash_temp}}
   end
 
-  @spec evaluate(t, time, temp) :: t
+  @spec update(t, time, temp) :: t
+  def update(controller, %DateTime{}=now, temp) do
+    evaluate(controller, now |> DateTime.to_unix, temp)
+  end
+
   @doc "Set heater mode to idle if the controller is off."
   def evaluate(%{mode: :idle}=controller, _now, _temp),
     do: controller

@@ -6,6 +6,8 @@ defmodule Ctrl.ControllerServer do
   alias Ctrl.Controller.Config
   alias Ctrl.Controller
 
+  @heater_mod Application.get_env(:ctrl, :heater)
+  @thermometer_mod Application.get_env(:ctrl, :thermometer)
 
   ## Client interface
 
@@ -31,6 +33,7 @@ defmodule Ctrl.ControllerServer do
   ## Server callbacks
 
   def init(config) do
+    @heater_mod.init()
     {:ok, Controller.new(config)}
   end
 
@@ -49,22 +52,18 @@ defmodule Ctrl.ControllerServer do
   end
 
   def handle_cast({:tick, now}, controller) do
-    now = now |> DateTime.to_unix
-
-    thermometer_mod = Application.get_env(:ctrl, :thermometer)
-    heater_mod = Application.get_env(:ctrl, :heater)
-
+    # TODO: move to init
+    thermometer_mod = @thermometer_mod
     temp_sensor = thermometer_mod.new
-    heater = heater_mod.new
 
     new_temp = thermometer_mod.read(temp_sensor)
-    controller = Controller.evaluate(controller, now, new_temp)
-    {_, heater_state} = heater_mod.update(heater, controller.mode)
+    controller = Controller.update(controller, now, new_temp)
+    on_off = @heater_mod.update(controller.mode)
 
     sample = %Sample{
       time: now,
       temperature: new_temp,
-      heater: heater_state,
+      heater: on_off,
       mode: controller.mode,
       mash_temperature: controller.mash_temp
     }

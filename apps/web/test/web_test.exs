@@ -34,9 +34,10 @@ defmodule WebTest do
   test "reads temperature" do
     conn = request(:get, "/temperature")
 
+    temp = Ctrl.ControllerServer.mash_temperature?
     assert conn.state == :sent
     assert conn.status == 200
-    assert conn.resp_body == "{\"mash-temperature\":0}"
+    assert conn.resp_body == "{\"mash-temperature\":#{temp}}"
   end
 
   test "set temperature" do
@@ -49,7 +50,7 @@ defmodule WebTest do
   end
 
   test "sample serialization" do
-    json = Poison.encode!(%Sample{time: 1234567, mash_temperature: 60, temperature: 40, heater: :on, mode: :heating})
+    json = Poison.encode!(%Sample{time: 1234567 |> DateTime.from_unix!, mash_temperature: 60, temperature: 40, heater: :on, mode: :heating})
 
     assert json == "{\"time\":\"1970-01-15T06:56:07\",\"temperature\":40,\"mode\":\"heating\",\"mash_temperature\":60,\"heater\":true}"
   end

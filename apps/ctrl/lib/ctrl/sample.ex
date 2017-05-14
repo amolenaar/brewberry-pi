@@ -13,13 +13,13 @@ defmodule Ctrl.Sample do
   defstruct [:time, :temperature, :heater, :mode, :mash_temperature]
 
   @type time :: non_neg_integer
-  @type temp :: float | integer
-  @type heater_state :: :on | :off
-  @type mode :: :idle | :heating | :slacking | :resting
+  @type temp :: Ctrl.Thermometer.temp
+  @type on_off :: Ctrl.Heater.on_off
+  @type mode :: Ctrl.Controller.mode
   @type t :: %Ctrl.Sample{
     time: time,
     temperature: temp,
-    heater: heater_state,
+    heater: on_off,
     mode: mode,
     mash_temperature: temp
   }

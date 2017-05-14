@@ -8,6 +8,8 @@ defmodule Ctrl.Metronome do
 
   use GenServer
 
+  @type time :: DateTime.t
+
   @timeout 2000
 
   def start_link(callback_pid, timeout \\ @timeout, opts \\ []) do

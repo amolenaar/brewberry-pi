@@ -7,58 +7,45 @@ defmodule Ctrl.Heater do
   `heater` property as a result.
   """
 
-  defmodule Backend do
-    @moduledoc """
-    Deal with heater I/O. Should return `:on` or `:off`,
-    depending of (new) state of the heater.
-    """
-    @callback init() :: :ok
-    @callback on!() :: :on
-    @callback off!() :: :off
-  end
+  @type on_off :: :on | :off
 
-  alias Ctrl.Sample
-
-  defmodule FakeBackend do
-    @behaviour Backend
-
-    def init, do: :ok
-    def on!, do: :on
-    def off!, do: :off
-  end
-
-  def start_link(backend) do
-    Agent.start_link(fn ->
-      :ok = backend.init()
-      backend
-    end, name: __MODULE__)
-  end
-
-  @doc "Handle `:heating` mode"
-  def update_sample(%Sample{mode: :heating} = sample) do
-    %{sample | heater: Agent.get_and_update(__MODULE__, fn backend -> {backend.on!, backend} end)}
-  end
-
-  @doc "Handle other modes, except `:heating`."
-  def update_sample(%Sample{} = sample) do
-    %{sample | heater: Agent.get_and_update(__MODULE__, fn backend -> {backend.off!, backend} end)}
-  end
-
-  @type t :: %{}
-  @callback new() :: t
-  @callback new() :: t
+  @callback init() :: :ok
+  @callback update(Ctrl.Controller.mode) :: on_off
 
 end
 
 
-# The new code:
 defmodule Ctrl.Heater.Fake do
   @behaviour Ctrl.Heater
 
-  def new do
-    %{}
+  def init do
+    :ok
   end
 
-  def update(heater, :heating), do: {heater, :on}
-  def update(heater, _mode   ), do: {heater, :off}
+  def update(:heating), do: :on
+  def update(_mode   ), do: :off
+end
+
+defmodule Ctrl.Heater.Kettle do
+  @behaviour Ctrl.Heater
+
+  @pin 17
+
+  alias Ctrl.Rpi.Gpio
+
+  def init do
+    Gpio.output_pin @pin
+    :ok
+  end
+
+  def update(:heating) do
+    Gpio.set_pin @pin, :on
+    :on
+  end
+
+  def update(_mode) do
+    Gpio.set_pin @pin, :off
+    :off
+  end
+
 end
