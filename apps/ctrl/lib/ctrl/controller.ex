@@ -100,13 +100,6 @@ defmodule Ctrl.Controller do
   def pause(controller),
     do: %{controller | mode: :idle}
 
-  # Deprecated
-  @spec update_sample(t, Sample.t) :: {t, Sample.t}
-  def update_sample(controller, sample) do
-    new_state = evaluate(controller, sample.time, sample.temperature)
-    {new_state, %{sample | mode: new_state.mode, mash_temperature: new_state.mash_temp}}
-  end
-
   @spec update(t, time, temp) :: t
   def update(controller, %DateTime{}=now, temp) do
     evaluate(controller, now |> DateTime.to_unix, temp)

@@ -3,7 +3,6 @@ defmodule ControllerTest do
 
   alias Ctrl.Controller
   alias Ctrl.Controller.Config
-  alias Ctrl.Sample
 
   doctest Controller
 
@@ -27,56 +26,55 @@ defmodule ControllerTest do
   end
 
   test "controller turned on starts in resting mode", %{controller: ctrl} do
-    assert {_, %{mode: :resting}} = Controller.update_sample(ctrl, %Sample{mode: :idle, temperature: 60})
-  end
-
-  test "controller sets mash temperature on sample", %{controller: ctrl} do
-    assert {_, %{mash_temperature: 60}} = Controller.update_sample(ctrl, %Sample{mode: :idle, temperature: 60})
+    assert :resting = Controller.update(ctrl, now(), 60) |> Controller.mode?
   end
 
   test "controller remains resting when set temperature is not above current", %{controller: ctrl} do
-    {ctrl, _} = Controller.update_sample(ctrl, %Sample{mode: :idle, temperature: 70})
+    ctrl = Controller.update(ctrl, now(), 70)
 
-    assert {_, %{mode: :resting}} = Controller.update_sample(ctrl, %Sample{mode: :resting, temperature: 70})
+    assert :resting = Controller.update(ctrl, later(), 70) |> Controller.mode?
   end
 
   test "controller starts heating when set temperature is above current", %{controller: ctrl} do
-    assert {_, %{mode: :heating}} = Controller.update_sample(ctrl, %Sample{mode: :resting, temperature: 42})
+    assert :heating = Controller.update(ctrl, now(), 42) |> Controller.mode?
   end
 
   test "controller keeps heating when time is not done", %{controller: ctrl} do
     # 2 degrees matches 89 seconds of heating
-    {ctrl, _} = Controller.update_sample(ctrl, %Sample{mode: :resting, time: 0, temperature: 58})
+    ctrl = Controller.update(ctrl, now(), 58)
 
-    assert {_, %{mode: :heating}} = Controller.update_sample(ctrl, %Sample{mode: :heating, time: 2, temperature: 42})
+    assert :heating = Controller.update(ctrl, later(), 42) |> Controller.mode?
   end
 
   test "controller stops heating is mash temperature is lower", %{controller: ctrl} do
     # 2 degrees matches 89 seconds of heating
-    {ctrl, _} = Controller.update_sample(ctrl, %Sample{mode: :resting, time: 0, temperature: 58})
+    ctrl = Controller.update(ctrl, now(), 58)
     ctrl = Controller.mash_temperature(ctrl, 21)
 
-    assert {_, %{mode: :slacking}} = Controller.update_sample(ctrl, %Sample{mode: :heating, time: 2, temperature: 42})
+    assert :slacking = Controller.update(ctrl, later(), 42) |> Controller.mode?
 
    end
 
   test "controller stops heating if time is over", %{controller: ctrl} do
     # 2 degrees matches 89 seconds of heating
-    {ctrl, _} = Controller.update_sample(ctrl, %Sample{time: 0, temperature: 58})
-    assert %{mode: :heating} = ctrl
-    assert {_, %{mode: :slacking}} = Controller.update_sample(ctrl, %Sample{time: 100, temperature: 58})
+    ctrl = Controller.update(ctrl, now(), 58)
+    assert :heating = Controller.mode? ctrl
+    assert :slacking = Controller.update(ctrl, later(), 58) |> Controller.mode?
   end
 
   test "controller keeps slacking until temperature is declining", %{controller: ctrl} do
-    {ctrl, _} = Controller.update_sample(ctrl, %Sample{time: 0, temperature: 58})
+    ctrl = Controller.update(ctrl, now(), 58)
     assert %{mode: :heating} = ctrl
 
     # 2 degrees matches 89 seconds of heating
-    {ctrl, _} = Controller.update_sample(ctrl, %Sample{time: 100, temperature: 58})
+    ctrl = Controller.update(ctrl, later(), 58)
     assert %{mode: :slacking} = ctrl
 
     # default fixed type for slacking state is 20 seconds
-    assert {_, %{mode: :resting}} = Controller.update_sample(ctrl, %Sample{time: 121, temperature: 58.04})
+    assert :resting = Controller.update(ctrl, even_later(), 58.04) |> Controller.mode?
   end
 
+  defp now, do: DateTime.from_unix! 0
+  defp later, do: DateTime.from_unix! 100
+  defp even_later, do: DateTime.from_unix! 121
 end
