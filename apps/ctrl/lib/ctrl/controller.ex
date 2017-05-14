@@ -112,17 +112,16 @@ defmodule Ctrl.Controller do
     evaluate(controller, now |> DateTime.to_unix, temp)
   end
 
-  @doc "Set heater mode to idle if the controller is off."
-  def evaluate(%{mode: :idle}=controller, _now, _temp),
+  defp evaluate(%{mode: :idle}=controller, _now, _temp),
     do: controller
 
-  def evaluate(%{mode: :resting, mash_temp: mash_temp} = controller, now, temp) when mash_temp - temp > 0.1,
+  defp evaluate(%{mode: :resting, mash_temp: mash_temp} = controller, now, temp) when mash_temp - temp > 0.1,
     do: %{controller | mode: :heating, since: now}
 
-  def evaluate(%{mode: :resting}=controller, _now, _temp),
+  defp evaluate(%{mode: :resting}=controller, _now, _temp),
     do: controller
 
-  def evaluate(%{mode: :heating}=controller, now, temp) do
+  defp evaluate(%{mode: :heating}=controller, now, temp) do
     since = controller.since
     dT = controller.mash_temp - temp
     if dT <= 0 or now >= since + Config.time(controller.config, dT) do
@@ -132,7 +131,7 @@ defmodule Ctrl.Controller do
     end
   end
 
-  def evaluate(%{mode: :slacking}=controller, now, temp) do
+  defp evaluate(%{mode: :slacking}=controller, now, temp) do
     since = controller.since
     end_time = since + controller.config.wait_time
     prev_temp = controller.max_temp
