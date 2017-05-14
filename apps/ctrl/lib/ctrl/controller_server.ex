@@ -69,7 +69,7 @@ defmodule Ctrl.ControllerServer do
       mash_temperature: Controller.mash_temperature?(controller)
     }
 
-    Ctrl.TimeSeries.update sample.time, sample
+    Ctrl.TimeSeries.update sample.time |> DateTime.to_unix, sample
 
     {:noreply, controller}
   end
