@@ -8,7 +8,8 @@ defmodule Ctrl.BrewHouse do
   """
 
   alias Ctrl.BrewHouse
-  defstruct power: 2000, efficiency: 0.80, volume: 17, wait_time: 20
+
+  defstruct [:power, :efficiency, :volume, :wait_time]
 
   @joules_per_litre 4186
 

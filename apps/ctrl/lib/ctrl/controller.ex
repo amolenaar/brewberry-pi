@@ -23,14 +23,14 @@ defmodule Ctrl.Controller do
   alias Ctrl.BrewHouse
   alias Ctrl.Controller
 
-  defstruct config: nil, mode: :idle, since: 0, mash_temp: 0, max_temp: 0
+  defstruct brew_house: nil, mode: :idle, since: 0, mash_temp: 0, max_temp: 0
 
   @type mode :: :idle | :heating | :slacking | :resting
   @type time :: Ctrl.Metronome.time
   @type timestamp :: non_neg_integer
   @type temp :: Ctrl.Thermometer.temp
   @opaque t :: %Controller{
-    config: BrewHouse.t,
+    brew_house: BrewHouse.t,
     mode: mode,
     since: timestamp,
     mash_temp: temp,
@@ -39,7 +39,7 @@ defmodule Ctrl.Controller do
 
   @spec new(BrewHouse.t) :: t
   def new(brew_house),
-    do: %Controller{config: brew_house}
+    do: %Controller{brew_house: brew_house}
 
   @spec mash_temperature(t, temp) :: t
   def mash_temperature(controller, new_mash_temp),
@@ -81,7 +81,7 @@ defmodule Ctrl.Controller do
   defp evaluate(%{mode: :heating}=controller, now, temp) do
     since = controller.since
     dT = controller.mash_temp - temp
-    if dT <= 0 or now >= since + BrewHouse.time(controller.config, dT) do
+    if dT <= 0 or now >= since + BrewHouse.time(controller.brew_house, dT) do
       %{controller | mode: :slacking, since: now, max_temp: temp}
     else
       %{controller | max_temp: max(controller.max_temp, temp)}
@@ -90,7 +90,7 @@ defmodule Ctrl.Controller do
 
   defp evaluate(%{mode: :slacking}=controller, now, temp) do
     since = controller.since
-    end_time = since + controller.config.wait_time
+    end_time = since + controller.brew_house.wait_time
     prev_temp = controller.max_temp
     if now > end_time and \
       abs(prev_temp - temp) < 0.05 do
