@@ -7,10 +7,12 @@ defmodule Ctrl.Heater do
   `heater` property as a result.
   """
 
+  @type t :: map
+
   @type on_off :: :on | :off
 
-  @callback init() :: :ok
-  @callback update(Ctrl.Controller.mode) :: on_off
+  @callback new() :: t
+  @callback update(t, Ctrl.Controller.mode) :: on_off
 
 end
 
@@ -18,12 +20,12 @@ end
 defmodule Ctrl.Heater.Fake do
   @behaviour Ctrl.Heater
 
-  def init do
-    :ok
+  def new do
+    %{}
   end
 
-  def update(:heating), do: :on
-  def update(_mode   ), do: :off
+  def update(_heater, :heating), do: :on
+  def update(_heater, _mode   ), do: :off
 end
 
 defmodule Ctrl.Heater.Kettle do
@@ -33,17 +35,17 @@ defmodule Ctrl.Heater.Kettle do
 
   alias Ctrl.Rpi.Gpio
 
-  def init do
+  def new do
     Gpio.output_pin @pin
-    :ok
+    %{}
   end
 
-  def update(:heating) do
+  def update(_heater, :heating) do
     Gpio.set_pin @pin, :on
     :on
   end
 
-  def update(_mode) do
+  def update(_heater, _mode) do
     Gpio.set_pin @pin, :off
     :off
   end
