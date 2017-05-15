@@ -84,19 +84,19 @@ defmodule Ctrl.Controller do
     if dT <= 0 or now >= since + BrewHouse.time(controller.brew_house, dT) do
       %{controller | mode: :slacking, since: now, max_temp: temp}
     else
-      %{controller | max_temp: max(controller.max_temp, temp)}
+      controller
     end
   end
 
   defp evaluate(%{mode: :slacking}=controller, now, temp) do
     since = controller.since
     end_time = since + controller.brew_house.wait_time
-    prev_temp = controller.max_temp
+    max_temp = controller.max_temp
     if now > end_time and \
-      abs(prev_temp - temp) < 0.05 do
+      (temp - max_temp) < 0.05 do
       %{controller | mode: :resting, since: now}
     else
-      controller
+      %{controller | max_temp: max(controller.max_temp, temp)}
     end
   end
 
