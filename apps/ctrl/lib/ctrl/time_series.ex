@@ -77,4 +77,9 @@ defmodule Ctrl.TimeSeries do
   def handle_call(:last, _from, {[sample | _rest], _t}=state) do
     {:reply, sample, state}
   end
+
+  def handle_call(:last, _from, {[], _t}=state) do
+    {:reply, %{}, state}
+  end
+
 end
