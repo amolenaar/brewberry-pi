@@ -33,8 +33,8 @@ defmodule WebTest do
 
   test "reads temperature" do
     conn = request(:get, "/temperature")
+    temp = 0
 
-    temp = Ctrl.ControllerServer.mash_temperature?
     assert conn.state == :sent
     assert conn.status == 200
     assert conn.resp_body == "{\"mash-temperature\":#{temp}}"
@@ -54,13 +54,5 @@ defmodule WebTest do
 
     assert json == "{\"time\":\"1970-01-15T06:56:07\",\"temperature\":40,\"mode\":\"heating\",\"mash_temperature\":60,\"heater\":true}"
   end
-
-#  xtest "get logging data" do
-#    conn = request(:get, "/logger")
-#
-#    assert conn.state == :sent
-#    assert conn.status == 200
-#    assert conn.resp_body == "{\"mash-temperature\":42}"
-#  end
 
 end

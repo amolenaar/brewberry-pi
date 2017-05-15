@@ -17,7 +17,7 @@ defmodule Web.Router do
   plug :dispatch
 
   get "/temperature" do
-    {_id, sample} = Ctrl.TimeSeries.last
+    {_id, sample} = Ctrl.TimeSeries.stream |> Enum.take(1) |> List.first
     send_resp(conn, 200, Poison.encode!(%{"mash-temperature" => sample.mash_temperature}))
   end
 
