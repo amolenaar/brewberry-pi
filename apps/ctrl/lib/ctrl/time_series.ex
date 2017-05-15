@@ -31,8 +31,8 @@ defmodule Ctrl.TimeSeries do
     GenServer.cast(time_series, {:truncate, @history_sec})
   end
 
-  def stream(time_series \\ __MODULE__) do
-    Ctrl.Dispatcher.stream
+  def stream() do
+    Ctrl.TimeSeries.Dispatcher.stream
   end
 
   ## Server
@@ -50,12 +50,12 @@ defmodule Ctrl.TimeSeries do
 
   def handle_cast({:update, {ts, _val}=sample}, {samples, t}) when ts - @history_sec - @delay_sec >= t do
     truncate(self())
-    Ctrl.Dispatcher.notify sample
+    Ctrl.TimeSeries.Dispatcher.notify sample
     {:noreply, {[sample | samples], t}}
   end
 
   def handle_cast({:update, sample}, {samples, t}) do
-    Ctrl.Dispatcher.notify sample
+    Ctrl.TimeSeries.Dispatcher.notify sample
     {:noreply, {[sample | samples], t}}
   end
 

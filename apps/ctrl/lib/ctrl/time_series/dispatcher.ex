@@ -1,9 +1,9 @@
-defmodule Ctrl.Dispatcher do
+defmodule Ctrl.TimeSeries.Dispatcher do
   @moduledoc """
   A Register based dispatcher for samples.
   """
 
-  @registry SampleNotification
+  @registry __MODULE__
 
   def start_link() do
     GenEvent.start_link([name: @registry])

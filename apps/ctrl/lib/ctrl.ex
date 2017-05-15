@@ -4,11 +4,9 @@ defmodule Ctrl do
   @moduledoc false
 
   alias Ctrl.ControllerServer
-  alias Ctrl.Dispatcher
   alias Ctrl.Metronome
   alias Ctrl.TimeSeries
-
-  @heater_backend Application.get_env(:ctrl, :heater_backend)
+  alias Ctrl.TimeSeries.Dispatcher
 
   @doc """
   Entrypoint for the Ctrl (controller) application.
@@ -17,9 +15,9 @@ defmodule Ctrl do
     import Supervisor.Spec, warn: false
 
     children = [
-      worker(ControllerServer, [], restart: :permanent),
-      supervisor(Dispatcher, [], restart: :permanent),
+      worker(Dispatcher, [], restart: :permanent),
       worker(TimeSeries, [], restart: :permanent),
+      worker(ControllerServer, [], restart: :permanent),
       worker(Metronome, [ControllerServer], restart: :permanent)
     ]
 
