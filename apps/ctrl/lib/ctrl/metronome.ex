@@ -5,16 +5,21 @@ defmodule Ctrl.Metronome do
   It does a `GenServer` cast of a `{:tick, time}` message, where time is a
   `DateTime` instance.
   """
-
   use GenServer
 
   @type time :: DateTime.t
 
   @timeout 2000
 
+  ## Client interface
+
+  @spec start_link(pid, non_neg_integer, list) :: {:ok, pid}
   def start_link(callback_pid, timeout \\ @timeout, opts \\ []) do
     GenServer.start_link(__MODULE__, {callback_pid, timeout}, opts)
   end
+
+
+  ## Server callbacks
 
   def init({_callback_pid, timeout}=state) do
     {:ok, state, timeout}
