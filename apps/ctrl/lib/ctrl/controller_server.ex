@@ -5,61 +5,74 @@ defmodule Ctrl.ControllerServer do
   alias Ctrl.Sample
   alias Ctrl.BrewHouse
   alias Ctrl.Controller
+  alias Ctrl.ControllerServer
 
   @heater_mod Application.get_env(:ctrl, :heater)
   @thermometer_mod Application.get_env(:ctrl, :thermometer)
 
   ## Client interface
 
+  @spec start_link() :: {:ok, pid}
   def start_link(),
     do: GenServer.start_link(__MODULE__, [], [name: __MODULE__])
 
+  @spec resume(GenServer.server) :: :ok
   def resume(controller \\ __MODULE__),
     do: GenServer.cast(controller, :resume)
 
+  @spec pause(GenServer.server) :: :ok
   def pause(controller \\ __MODULE__),
     do: GenServer.cast(controller, :pause)
 
+  @spec mash_temperature(GenServer.server, float | integer) :: :ok
   def mash_temperature(controller \\ __MODULE__, new_temp),
     do: GenServer.cast(controller, {:mash_temp, new_temp})
-
-  def mash_temperature?(controller \\ __MODULE__),
-    do: GenServer.call(controller, :mash_temp)
-
-  def mode?(controller \\ __MODULE__),
-    do: GenServer.call(controller, :mode)
 
 
   ## Server callbacks
 
-  def init([]) do
-    @heater_mod.init()
-    {:ok, Controller.new(BrewHouse.new)}
+  defstruct [:controller, :thermometer, :heater]
+
+  @typep t :: %ControllerServer{
+    controller: Controller.t,
+    thermometer: {module, Thermometer.t},
+    heater: {module, Heater.t}
+  }
+
+  @spec init(any) :: {:ok, t}
+  def init(_opts) do
+    heater_mod = @heater_mod
+    thermometer_mod = @thermometer_mod
+    {:ok, %ControllerServer{
+            controller: Controller.new(BrewHouse.new),
+            thermometer: {thermometer_mod, thermometer_mod.new},
+            heater: {heater_mod, heater_mod.new}}}
   end
 
+  @spec handle_cast(atom | {atom, any}, t) :: {:noreply, t}
+
   @doc "Start the controller."
-  def handle_cast(:resume, controller) do
-    {:noreply, Controller.resume(controller)}
+  def handle_cast(:resume, %{controller: controller}=config) do
+    {:noreply, %{config | controller: Controller.resume(controller)}}
   end
 
   @doc "Stop the controller."
-  def handle_cast(:pause, controller) do
-    {:noreply, Controller.pause(controller)}
+  def handle_cast(:pause, %{controller: controller}=config) do
+    {:noreply, %{config | controller: Controller.pause(controller)}}
   end
 
-  def handle_cast({:mash_temp, new_temp}, controller) do
-    {:noreply, Controller.mash_temperature(controller, new_temp)}
+  def handle_cast({:mash_temp, new_temp}, %{controller: controller}=config) do
+    {:noreply, %{config | controller: Controller.mash_temperature(controller, new_temp)}}
   end
 
-  def handle_cast({:tick, now}, controller) do
-    # TODO: move to init
-    thermometer_mod = @thermometer_mod
-    temp_sensor = thermometer_mod.new
+  def handle_cast({:tick, now}, %{controller: controller,
+                                  thermometer: {thermometer_mod, thermometer},
+                                  heater: {heater_mod, heater}}=config) do
 
-    new_temp = thermometer_mod.read(temp_sensor)
+    new_temp = thermometer_mod.read(thermometer)
     controller = Controller.update(controller, now, new_temp)
     mode = Controller.mode?(controller)
-    on_off = @heater_mod.update(mode)
+    on_off = heater_mod.update(heater, mode)
 
     sample = %Sample{
       time: now,
@@ -71,15 +84,7 @@ defmodule Ctrl.ControllerServer do
 
     Ctrl.TimeSeries.update sample.time |> DateTime.to_unix, sample
 
-    {:noreply, controller}
-  end
-
-  def handle_call(:mash_temp, _from, controller) do
-    {:reply, controller.mash_temp, controller}
-  end
-
-  def handle_call(:mode, _from, controller) do
-    {:reply, controller.mode, controller}
+    {:noreply, %{config | controller: controller}}
   end
 
 end
