@@ -56,7 +56,7 @@ To control a brewing kettle some additional hardware is required:
 
 A schema is made with [Fritzing](http://fritzing.org) and is available in the file `Brouwerij.fzz`.
 
-![schema](Brouwerij_bb.svg)
+![schema](Brouwerij_bb.svg?raw=true)
 
 ### Bill of Materials
 
