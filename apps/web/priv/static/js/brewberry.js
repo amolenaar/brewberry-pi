@@ -1,5 +1,13 @@
 "use strict";
 
+function send(url, data) {
+    var xmlhttp = new XMLHttpRequest();
+
+    xmlhttp.open("POST", url, true);
+    xmlhttp.setRequestHeader("Content-Type", "application/json");
+    xmlhttp.send(JSON.stringify(data));
+}
+
 function Logger() {
     var self = riot.observable(this);
 
@@ -62,11 +70,7 @@ function Controls() {
     var self = this;
 
     function setHeater(power) {
-        $.ajax("/controller", {
-                data: JSON.stringify({ "set": power }),
-                contentType: "application/json",
-                type: "POST"
-            });
+        send("/controller", { "set": power });
     }
 
     this.turnOn = function () {
@@ -78,22 +82,18 @@ function Controls() {
     };
 
     this.setTemperature = function (t) {
-        $.ajax("/temperature", {
-                data: JSON.stringify({ "set": t }),
-                contentType: "application/json",
-                type: "POST"
-            });
+        send("/temperature", { "set": t });
     };
 }
 
 // Presenter
-$(function () {
+window.onload = (function () {
 
     var logger = new Logger(),
         controls = new Controls();
 
     /* Chart */
-    var chart = logChart($("#log-chart"));
+    var chart = logChart(document.querySelector("#log-chart"));
 
     addSeries(chart, logger, {
         "name": "Heater",
@@ -115,23 +115,24 @@ $(function () {
         "color": "#0000BF" });
 
     /* Controls */
-    var temperatureDisplay = $("#temperature"),
-        turnOnOffButton = $("#turn-on-off"),
-        setTemperatureButton = $("#set-temperature"),
-        healthDisplay = $("#health");
+    var temperatureDisplay = document.querySelector("#temperature"),
+        turnOnOffButton = document.querySelector("#turn-on-off"),
+        setTemperatureButton = document.querySelector("#set-temperature"),
+        healthDisplay = document.querySelector("#health");
 
     logger.onSampleOnce(function (sample) {
-        setTemperatureButton.val(sample.mash_temperature);
-        turnOnOffButton.prop("checked", sample.mode === "heating");
+        setTemperatureButton.value = sample.mash_temperature;
+        turnOnOffButton.checked = (sample.mode !== "idle");
     });
 
     logger.onSample(function (sample) {
-        temperatureDisplay.text(sample.temperature.toFixed(2));
-        healthDisplay.toggleClass("odd").text(new Date().toLocaleTimeString() + " / " + sample.mode);
+        temperatureDisplay.textContent = sample.temperature.toFixed(2);
+        healthDisplay.classList.toggle("odd");
+        healthDisplay.textContent = (new Date().toLocaleTimeString() + " / " + sample.mode);
     });
 
-    turnOnOffButton.change(function () {
-        if ($(this).is(':checked')) {
+    turnOnOffButton.addEventListener("change", function () {
+        if (this.checked) {
             controls.turnOn();
         } else {
             controls.turnOff();
@@ -141,13 +142,13 @@ $(function () {
         // turnOnButton.text("...");
     });
 
-    setTemperatureButton.change(function (event) {
-        var temperature = setTemperatureButton.val();
+    setTemperatureButton.addEventListener("change", function (event) {
+        var temperature = setTemperatureButton.value;
         if (temperature) {
             controls.setTemperature(parseInt(temperature));
         }
         return false;
     });
-});
+})();
 
 // vim:sw=4:et:ai

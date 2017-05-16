@@ -9,7 +9,7 @@ function logChart(element) {
     });
     return new Highcharts.Chart({
         chart: {
-            renderTo: element.get(0),
+            renderTo: element,
             type: "area",
             backgroundColor: "transparent",
             animation: Highcharts.svg // don"t animate in old IE
@@ -103,14 +103,13 @@ function addSeries(chart, logger, attrs) {
 
     var x = attrs.x;
     var y = attrs.y;
-    
+
     logger.on("samples", function (samples) {
         if (samples) {
             for (var i in samples) {
                 var e = samples[i];
-                series.addPoint([e[x], e[y]], false, false);
+                series.addPoint([e[x], e[y]], i === samples.length - 1, false);
             }
-            series.update();
         }
     });
 
