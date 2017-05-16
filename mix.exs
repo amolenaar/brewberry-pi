@@ -9,8 +9,8 @@ defmodule Brewberry.Mixfile do
   end
 
   defp deps do
-    [{:ex_doc, "~> 0.14", only: :dev},
-     {:credo, "~> 0.5.3", only: :dev, runtime: false},
+    [{:ex_doc, "~> 0.15.1", only: :dev, runtime: false},
+     {:credo, "~> 0.7.4", only: :dev, runtime: false},
      {:dialyxir, "~> 0.4", only: :dev, runtime: false}]
   end
 end
