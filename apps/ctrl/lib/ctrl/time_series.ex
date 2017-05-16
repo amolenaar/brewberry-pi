@@ -2,7 +2,7 @@ defmodule Ctrl.TimeSeries do
   use GenServer
   @moduledoc false
 
-  @history_sec 10800 # 3 hours
+  @history_sec 10_800 # 3 hours
   @delay_sec 300 # 5 minutes
 
   def start_link(name \\ __MODULE__) do
@@ -48,7 +48,7 @@ defmodule Ctrl.TimeSeries do
     handle_cast({:update, {sample.time, sample}}, state)
   end
 
-  def handle_cast({:update, {ts, _val}=sample}, {samples, t}) when ts - @history_sec - @delay_sec >= t do
+  def handle_cast({:update, {ts, _val} = sample}, {samples, t}) when ts - @history_sec - @delay_sec >= t do
     truncate(self())
     Ctrl.TimeSeries.Dispatcher.notify sample
     {:noreply, {[sample | samples], t}}
@@ -59,7 +59,7 @@ defmodule Ctrl.TimeSeries do
     {:noreply, {[sample | samples], t}}
   end
 
-  def handle_cast({:truncate, interval}, {[{ts, _val} | _rest]=samples, oldest_ts}) when ts - interval >= oldest_ts do
+  def handle_cast({:truncate, interval}, {[{ts, _val} | _rest] = samples, oldest_ts}) when ts - interval >= oldest_ts do
     delete_from_ts = ts - interval
     {:noreply,
      {samples
@@ -70,11 +70,11 @@ defmodule Ctrl.TimeSeries do
     {:noreply, state}
   end
 
-  def handle_call({:series, since}, _from, {samples, _t}=state) do
+  def handle_call({:series, since}, _from, {samples, _t} = state) do
     {:reply, samples |> Enum.take_while(fn {t, _s} -> t > since end) |> Enum.reverse, state}
   end
 
-  def handle_call(:last, _from, {[sample | _rest], _t}=state) do
+  def handle_call(:last, _from, {[sample | _rest], _t} = state) do
     {:reply, sample, state}
   end
 

@@ -52,17 +52,17 @@ defmodule Ctrl.ControllerServer do
   @spec handle_cast(atom | {atom, any}, t) :: {:noreply, t}
 
   @doc "Start the controller."
-  def handle_cast(:resume, %{controller: controller}=config) do
-    {:noreply, %{config | controller: Controller.resume(controller)}}
+  def handle_cast(:resume, config) do
+    {:noreply, %{config | controller: Controller.resume(config.controller)}}
   end
 
   @doc "Stop the controller."
-  def handle_cast(:pause, %{controller: controller}=config) do
-    {:noreply, %{config | controller: Controller.pause(controller)}}
+  def handle_cast(:pause, config) do
+    {:noreply, %{config | controller: Controller.pause(config.controller)}}
   end
 
-  def handle_cast({:mash_temp, new_temp}, %{controller: controller}=config) do
-    {:noreply, %{config | controller: Controller.mash_temperature(controller, new_temp)}}
+  def handle_cast({:mash_temp, new_temp}, config) do
+    {:noreply, %{config | controller: Controller.mash_temperature(config.controller, new_temp)}}
   end
 
   def handle_cast({:tick, now}, config) do

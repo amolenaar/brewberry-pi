@@ -21,11 +21,11 @@ defmodule Ctrl.Metronome do
 
   ## Server callbacks
 
-  def init({_callback_pid, timeout}=state) do
+  def init({_callback_pid, timeout} = state) do
     {:ok, state, timeout}
   end
 
-  def handle_info(:timeout, {callback_pid, timeout}=state) do
+  def handle_info(:timeout, {callback_pid, timeout} = state) do
     GenServer.cast(callback_pid, {:tick, DateTime.utc_now})
     {:noreply, state, timeout}
   end

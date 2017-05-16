@@ -10,7 +10,7 @@ defmodule Ctrl.Sample do
   * `:mash_temperature` contains the set mash temperature.
   """
 
-  defstruct [:time, :temperature, :heater, :mode, :mash_temperature]
+  defstruct time: 0, temperature: 0, heater: :off, mode: :idle, mash_temperature: 0
 
   @type time :: non_neg_integer
   @type temp :: Ctrl.Thermometer.temp

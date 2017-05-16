@@ -1,4 +1,5 @@
 defmodule Ctrl.Rpi.Gpio do
+  @moduledoc "GPIO pin handling."
 
   def output_pin(number) do
     if !File.exists?("/sys/class/gpio/gpio#{number}") do

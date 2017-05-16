@@ -54,7 +54,7 @@ defmodule Ctrl.Controller do
     do: controller.mode
 
   @spec resume(t) :: t
-  def resume(%{mode: :idle}=controller),
+  def resume(%{mode: :idle} = controller),
     do: %{controller | mode: :resting}
 
   def resume(controller),
@@ -65,30 +65,30 @@ defmodule Ctrl.Controller do
     do: %{controller | mode: :idle}
 
   @spec update(t, time, temp) :: t
-  def update(controller, %DateTime{}=now, temp) do
+  def update(controller, now, temp) do
     evaluate(controller, now |> DateTime.to_unix, temp)
   end
 
-  defp evaluate(%{mode: :idle}=controller, _now, _temp),
+  defp evaluate(%{mode: :idle} = controller, _now, _temp),
     do: controller
 
   defp evaluate(%{mode: :resting, mash_temp: mash_temp} = controller, now, temp) when mash_temp - temp > 0.1,
     do: %{controller | mode: :heating, since: now}
 
-  defp evaluate(%{mode: :resting}=controller, _now, _temp),
+  defp evaluate(%{mode: :resting} = controller, _now, _temp),
     do: controller
 
-  defp evaluate(%{mode: :heating}=controller, now, temp) do
+  defp evaluate(%{mode: :heating} = controller, now, temp) do
     since = controller.since
-    dT = controller.mash_temp - temp
-    if dT <= 0 or now >= since + BrewHouse.time(controller.brew_house, dT) do
+    dt = controller.mash_temp - temp
+    if dt <= 0 or now >= since + BrewHouse.time(controller.brew_house, dt) do
       %{controller | mode: :slacking, since: now, max_temp: temp}
     else
       controller
     end
   end
 
-  defp evaluate(%{mode: :slacking}=controller, now, temp) do
+  defp evaluate(%{mode: :slacking} = controller, now, temp) do
     since = controller.since
     end_time = since + controller.brew_house.wait_time
     max_temp = controller.max_temp

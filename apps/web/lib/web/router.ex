@@ -17,7 +17,7 @@ defmodule Web.Router do
   plug :dispatch
 
   get "/temperature" do
-    {_id, sample} = Ctrl.TimeSeries.stream |> Enum.take(1) |> List.first
+    {_id, sample} = Ctrl.TimeSeries.last
     send_resp(conn, 200, Poison.encode!(%{"mash-temperature" => sample.mash_temperature}))
   end
 
@@ -50,7 +50,8 @@ defmodule Web.Router do
 
     IO.puts "last event id: #{inspect last_event_id}"
 
-    put_resp_header(conn, "content-type", "text/event-stream")
+    conn
+    |> put_resp_header("content-type", "text/event-stream")
     |> send_chunked(200)
     |> send_past_events(last_event_id)
     |> send_events()
@@ -58,7 +59,8 @@ defmodule Web.Router do
 
   defp send_past_events(conn, last_event_id) do
     chunk(conn,
-      Ctrl.TimeSeries.get_series(last_event_id)
+      last_event_id
+      |> Ctrl.TimeSeries.get_series
       |> encode_events
     )
     conn

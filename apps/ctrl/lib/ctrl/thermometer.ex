@@ -27,6 +27,7 @@ defmodule Ctrl.Thermometer do
 end
 
 defmodule Ctrl.Thermometer.Fake do
+  @moduledoc false
   @behaviour Ctrl.Thermometer
 
   def init do
@@ -41,6 +42,7 @@ defmodule Ctrl.Thermometer.Fake do
 end
 
 defmodule Ctrl.Thermometer.Static do
+  @moduledoc false
   @behaviour Ctrl.Thermometer
 
   def init, do: {:ok, nil}
@@ -50,9 +52,8 @@ defmodule Ctrl.Thermometer.Static do
 end
 
 defmodule Ctrl.Thermometer.Digital do
+  @moduledoc "DS18B20 thermometer, mounted on pin 17."
   @behaviour Ctrl.Thermometer
-
-  # TODO: Consideration: should I create separate processes (genservers) for the IO bits?
 
   alias Ctrl.Rpi.W1
 

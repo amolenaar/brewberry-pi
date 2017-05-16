@@ -7,9 +7,10 @@ defmodule ControllerTest do
   doctest Controller
 
   setup do
-    ctrl = Controller.new(BrewHouse.new)
-    |> Controller.resume()
-    |> Controller.mash_temperature(60)
+    ctrl = BrewHouse.new
+      |> Controller.new
+      |> Controller.resume()
+      |> Controller.mash_temperature(60)
     {:ok, controller: ctrl}
   end
 
@@ -26,32 +27,33 @@ defmodule ControllerTest do
   end
 
   test "controller turned on starts in resting mode", %{controller: ctrl} do
-    assert :resting = Controller.update(ctrl, now(), 60) |> Controller.mode?
+    assert :resting = ctrl |> Controller.update(now(), 60) |> Controller.mode?
   end
 
   test "controller remains resting when set temperature is not above current", %{controller: ctrl} do
     ctrl = Controller.update(ctrl, now(), 70)
 
-    assert :resting = Controller.update(ctrl, later(), 70) |> Controller.mode?
+    assert :resting = ctrl |> Controller.update(later(), 70) |> Controller.mode?
   end
 
   test "controller starts heating when set temperature is above current", %{controller: ctrl} do
-    assert :heating = Controller.update(ctrl, now(), 42) |> Controller.mode?
+    assert :heating = ctrl |> Controller.update(now(), 42) |> Controller.mode?
   end
 
   test "controller keeps heating when time is not done", %{controller: ctrl} do
     # 2 degrees matches 89 seconds of heating
     ctrl = Controller.update(ctrl, now(), 58)
 
-    assert :heating = Controller.update(ctrl, later(), 42) |> Controller.mode?
+    assert :heating = ctrl |> Controller.update(later(), 42) |> Controller.mode?
   end
 
   test "controller stops heating is mash temperature is lower", %{controller: ctrl} do
     # 2 degrees matches 89 seconds of heating
-    ctrl = Controller.update(ctrl, now(), 58)
-    ctrl = Controller.mash_temperature(ctrl, 21)
+    ctrl = ctrl
+      |> Controller.update(now(), 58)
+      |> Controller.mash_temperature(21)
 
-    assert :slacking = Controller.update(ctrl, later(), 42) |> Controller.mode?
+    assert :slacking = ctrl |> Controller.update(later(), 42) |> Controller.mode?
 
    end
 
@@ -59,7 +61,7 @@ defmodule ControllerTest do
     # 2 degrees matches 89 seconds of heating
     ctrl = Controller.update(ctrl, now(), 58)
     assert :heating = Controller.mode? ctrl
-    assert :slacking = Controller.update(ctrl, later(), 58) |> Controller.mode?
+    assert :slacking = ctrl |> Controller.update(later(), 58) |> Controller.mode?
   end
 
   test "controller keeps slacking until temperature is declining", %{controller: ctrl} do
@@ -71,7 +73,7 @@ defmodule ControllerTest do
     assert %{mode: :slacking} = ctrl
 
     # default fixed type for slacking state is 20 seconds
-    assert :resting = Controller.update(ctrl, even_later(), 58.04) |> Controller.mode?
+    assert :resting = ctrl |> Controller.update(even_later(), 58.04) |> Controller.mode?
   end
 
   defp now, do: DateTime.from_unix! 0

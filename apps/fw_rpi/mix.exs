@@ -46,7 +46,7 @@ defmodule FwRpi.Mixfile do
      {:nerves_networking, "~> 0.6.0", warn_missing: false},
      {:nerves_firmware_http, "~> 0.3.1"},
      {:ctrl, in_umbrella: true},
-     {:web, in_umbrella: true }]
+     {:web, in_umbrella: true}]
   end
 
   def system(:host), do: []

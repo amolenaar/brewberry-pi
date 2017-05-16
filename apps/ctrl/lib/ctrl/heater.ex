@@ -34,6 +34,7 @@ end
 
 
 defmodule Ctrl.Heater.Fake do
+  @moduledoc false
   @behaviour Ctrl.Heater
 
   def init do
@@ -41,10 +42,11 @@ defmodule Ctrl.Heater.Fake do
   end
 
   def handle_update(_heater, :heating), do: :on
-  def handle_update(_heater, _mode   ), do: :off
+  def handle_update(_heater, _mode), do: :off
 end
 
 defmodule Ctrl.Heater.Kettle do
+  @moduledoc false
   @behaviour Ctrl.Heater
 
   @pin 17
