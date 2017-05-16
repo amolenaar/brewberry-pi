@@ -120,15 +120,16 @@ window.onload = (function () {
         setTemperatureButton = document.querySelector("#set-temperature"),
         healthDisplay = document.querySelector("#health");
 
-    logger.onSampleOnce(function (sample) {
-        setTemperatureButton.value = sample.mash_temperature;
-        turnOnOffButton.checked = (sample.mode !== "idle");
-    });
-
     logger.onSample(function (sample) {
         temperatureDisplay.textContent = sample.temperature.toFixed(2);
         healthDisplay.classList.toggle("odd");
         healthDisplay.textContent = (new Date().toLocaleTimeString() + " / " + sample.mode);
+        if (setTemperatureButton !== document.activeElement) {
+            setTemperatureButton.value = sample.mash_temperature;
+        }
+        if (turnOnOffButton !== document.activeElement) {
+            turnOnOffButton.checked = (sample.mode !== "idle");
+        }
     });
 
     turnOnOffButton.addEventListener("change", function () {
@@ -139,10 +140,9 @@ window.onload = (function () {
         }
         // Check logger, re-initiate if needed.
         logger.onlineCheck();
-        // turnOnButton.text("...");
     });
 
-    setTemperatureButton.addEventListener("change", function (event) {
+    setTemperatureButton.addEventListener("change", function () {
         var temperature = setTemperatureButton.value;
         if (temperature) {
             controls.setTemperature(parseInt(temperature));
