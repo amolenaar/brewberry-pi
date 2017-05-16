@@ -1,23 +1,37 @@
 defmodule Ctrl.Thermometer do
   @moduledoc false
 
-  @opaque t :: map
+  @opaque t :: %Ctrl.Thermometer{
+    module: module,
+    state: term
+  }
 
   @type temp :: float | integer
 
-  @callback new() :: t
-  @callback read(t) :: temp
+  defstruct [:module, :state]
+
+  def new(module) do
+    {:ok, state} = module.init()
+    %Ctrl.Thermometer{module: module, state: state}
+  end
+
+  def read(thermometer) do
+    apply(thermometer.module, :handle_read, [thermometer.state])
+  end
+
+  @callback init() :: {:ok, term}
+  @callback handle_read(state :: term) :: temp
 
 end
 
 defmodule Ctrl.Thermometer.Fake do
   @behaviour Ctrl.Thermometer
 
-  def new do
-    %{}
+  def init do
+    {:ok, nil}
   end
 
-  def read(%{}) do
+  def handle_read(nil) do
     time = DateTime.utc_now |> DateTime.to_unix
     :math.sin(time / 20)
   end
@@ -27,9 +41,9 @@ end
 defmodule Ctrl.Thermometer.Static do
   @behaviour Ctrl.Thermometer
 
-  def new, do: %{}
+  def init, do: {:ok, nil}
 
-  def read(%{}), do: 42
+  def handle_read(nil), do: 42
 
 end
 
@@ -39,13 +53,10 @@ defmodule Ctrl.Thermometer.Digital do
   # TODO: Consideration: should I create separate processes (genservers) for the IO bits?
 
   alias Ctrl.Rpi.W1
-  alias Ctrl.Thermometer.Digital
 
-  defstruct [:sensor]
+  def init, do: {:ok, W1.sensor}
 
-  def new, do: %Digital{sensor: W1.sensor}
-
-  def read(%Digital{sensor: sensor}), do: W1.read sensor
+  def handle_read(sensor), do: W1.read sensor
 
 end
 

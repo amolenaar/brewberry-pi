@@ -7,12 +7,26 @@ defmodule Ctrl.Heater do
   `heater` property as a result.
   """
 
-  @type t :: map
+  @type t :: %Ctrl.Heater{
+    module: module,
+    state: term
+  }
 
   @type on_off :: :on | :off
 
-  @callback new() :: t
-  @callback update(t, Ctrl.Controller.mode) :: on_off
+  defstruct [:module, :state]
+
+  def new(module) do
+    {:ok, state} = module.init()
+    %Ctrl.Thermometer{module: module, state: state}
+  end
+
+  def update(heater, mode) do
+    apply(heater.module, :handle_update, [heater.state, mode])
+  end
+
+  @callback init() :: t
+  @callback handle_update(state :: term, Ctrl.Controller.mode) :: on_off
 
 end
 
@@ -20,12 +34,12 @@ end
 defmodule Ctrl.Heater.Fake do
   @behaviour Ctrl.Heater
 
-  def new do
-    %{}
+  def init do
+    {:ok, nil}
   end
 
-  def update(_heater, :heating), do: :on
-  def update(_heater, _mode   ), do: :off
+  def handle_update(_heater, :heating), do: :on
+  def handle_update(_heater, _mode   ), do: :off
 end
 
 defmodule Ctrl.Heater.Kettle do
@@ -35,17 +49,17 @@ defmodule Ctrl.Heater.Kettle do
 
   alias Ctrl.Rpi.Gpio
 
-  def new do
+  def init do
     Gpio.output_pin @pin
-    %{}
+    {:ok, nil}
   end
 
-  def update(_heater, :heating) do
+  def handle_update(_heater, :heating) do
     Gpio.set_pin @pin, :on
     :on
   end
 
-  def update(_heater, _mode) do
+  def handle_update(_heater, _mode) do
     Gpio.set_pin @pin, :off
     :off
   end

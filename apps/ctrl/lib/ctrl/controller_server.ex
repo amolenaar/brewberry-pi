@@ -6,6 +6,8 @@ defmodule Ctrl.ControllerServer do
   alias Ctrl.BrewHouse
   alias Ctrl.Controller
   alias Ctrl.ControllerServer
+  alias Ctrl.Heater
+  alias Ctrl.Thermometer
 
   @heater_mod Application.get_env(:ctrl, :heater)
   @thermometer_mod Application.get_env(:ctrl, :thermometer)
@@ -35,8 +37,8 @@ defmodule Ctrl.ControllerServer do
 
   @typep t :: %ControllerServer{
     controller: Controller.t,
-    thermometer: {module, Thermometer.t},
-    heater: {module, Heater.t}
+    thermometer: Thermometer.t,
+    heater: Heater.t
   }
 
   @spec init(any) :: {:ok, t}
@@ -45,8 +47,8 @@ defmodule Ctrl.ControllerServer do
     thermometer_mod = @thermometer_mod
     {:ok, %ControllerServer{
             controller: Controller.new(BrewHouse.new),
-            thermometer: {thermometer_mod, thermometer_mod.new},
-            heater: {heater_mod, heater_mod.new}}}
+            thermometer: Thermometer.new(thermometer_mod),
+            heater: Heater.new(heater_mod)}}
   end
 
   @spec handle_cast(atom | {atom, any}, t) :: {:noreply, t}
@@ -65,14 +67,12 @@ defmodule Ctrl.ControllerServer do
     {:noreply, %{config | controller: Controller.mash_temperature(controller, new_temp)}}
   end
 
-  def handle_cast({:tick, now}, %{controller: controller,
-                                  thermometer: {thermometer_mod, thermometer},
-                                  heater: {heater_mod, heater}}=config) do
+  def handle_cast({:tick, now}, config) do
 
-    new_temp = thermometer_mod.read(thermometer)
-    controller = Controller.update(controller, now, new_temp)
+    new_temp = Thermometer.read(config.thermometer)
+    controller = Controller.update(config.controller, now, new_temp)
     mode = Controller.mode?(controller)
-    on_off = heater_mod.update(heater, mode)
+    on_off = Heater.update(config.heater, mode)
 
     sample = %Sample{
       time: now,
