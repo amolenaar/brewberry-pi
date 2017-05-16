@@ -1,4 +1,4 @@
-# Brewberry &pi; [![Build Status](https://travis-ci.org/amolenaar/elixir-brewberry-pi.svg?branch=master)](https://travis-ci.org/amolenaar/elixir-brewberry-pi)
+# Brewberry &pi; [![Build Status](https://travis-ci.org/amolenaar/brewberry-pi.svg?branch=master)](https://travis-ci.org/amolenaar/brewberry-pi)
 
 
 > Given a DS18B20 temperature sensor,
