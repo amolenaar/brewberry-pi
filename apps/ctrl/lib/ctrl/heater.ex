@@ -7,7 +7,7 @@ defmodule Ctrl.Heater do
   `heater` property as a result.
   """
 
-  @type t :: %Ctrl.Heater{
+  @opaque t :: %Ctrl.Heater{
     module: module,
     state: term
   }
@@ -16,16 +16,18 @@ defmodule Ctrl.Heater do
 
   defstruct [:module, :state]
 
+  @spec new(module) :: t
   def new(module) do
     {:ok, state} = module.init()
-    %Ctrl.Thermometer{module: module, state: state}
+    %Ctrl.Heater{module: module, state: state}
   end
 
+  @spec update(state :: term, Ctrl.Controller.mode) :: on_off
   def update(heater, mode) do
     apply(heater.module, :handle_update, [heater.state, mode])
   end
 
-  @callback init() :: t
+  @callback init() :: {:ok, term}
   @callback handle_update(state :: term, Ctrl.Controller.mode) :: on_off
 
 end

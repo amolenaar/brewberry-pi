@@ -41,14 +41,12 @@ defmodule Ctrl.ControllerServer do
     heater: Heater.t
   }
 
-  @spec init(any) :: {:ok, t}
+  @spec init(term) :: {:ok, t}
   def init(_opts) do
-    heater_mod = @heater_mod
-    thermometer_mod = @thermometer_mod
     {:ok, %ControllerServer{
             controller: Controller.new(BrewHouse.new),
-            thermometer: Thermometer.new(thermometer_mod),
-            heater: Heater.new(heater_mod)}}
+            thermometer: Thermometer.new(@thermometer_mod),
+            heater: Heater.new(@heater_mod)}}
   end
 
   @spec handle_cast(atom | {atom, any}, t) :: {:noreply, t}

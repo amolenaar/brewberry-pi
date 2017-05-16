@@ -10,11 +10,13 @@ defmodule Ctrl.Thermometer do
 
   defstruct [:module, :state]
 
+  @spec new(module) :: t
   def new(module) do
     {:ok, state} = module.init()
     %Ctrl.Thermometer{module: module, state: state}
   end
 
+  @spec read(state :: term) :: temp
   def read(thermometer) do
     apply(thermometer.module, :handle_read, [thermometer.state])
   end
