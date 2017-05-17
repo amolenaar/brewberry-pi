@@ -76,6 +76,11 @@ function logChart(element) {
                 stacking: null,
                 marker: {
                     enabled: false
+                },
+                states: {
+                    hover: {
+                        enabled: false
+                    }
                 }
             }
         }

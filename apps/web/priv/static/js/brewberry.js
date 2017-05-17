@@ -124,9 +124,15 @@ window.onload = (function () {
         temperatureDisplay.textContent = sample.temperature.toFixed(2);
         healthDisplay.classList.toggle("odd");
         healthDisplay.textContent = (new Date().toLocaleTimeString() + " / " + sample.mode);
+    });
+
+    logger.onSample(function (sample) {
         if (setTemperatureButton !== document.activeElement) {
             setTemperatureButton.value = sample.mash_temperature;
         }
+    });
+
+    logger.onSample(function (sample) {
         if (turnOnOffButton !== document.activeElement) {
             turnOnOffButton.checked = (sample.mode !== "idle");
         }
@@ -140,6 +146,7 @@ window.onload = (function () {
         }
         // Check logger, re-initiate if needed.
         logger.onlineCheck();
+        return false;
     });
 
     setTemperatureButton.addEventListener("change", function () {

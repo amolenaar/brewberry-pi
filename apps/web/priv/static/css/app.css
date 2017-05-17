@@ -45,6 +45,7 @@
   vertical-align: middle;
   font-size: 50%;
   padding: 0 7px;
+  transition: background-color 0.5s;
 }
 
 #health.odd {
