@@ -3,6 +3,7 @@ defmodule TimeSeriesTest do
   @moduledoc false
 
   alias Ctrl.TimeSeries
+  import TestHelper
 
   @one_hour 3600
   @dummy_val 1
@@ -39,18 +40,6 @@ defmodule TimeSeriesTest do
     wait_until 10, fn -> {:messages, []} = :erlang.process_info(time_series, :messages) end
 
     assert TimeSeries.since(time_series, 0) == [{2 * @one_hour + 1, @dummy_val}, {3 * @one_hour, @dummy_val}, {5 * @one_hour, @dummy_val}]
-  end
-
-  def wait_until(0, fun), do: fun.()
-
-  def wait_until(timeout, fun) do
-    try do
-      fun.()
-    rescue
-      MatchError ->
-        :timer.sleep(10)
-        wait_until(max(0, timeout - 10), fun)
-    end
   end
 
 end
