@@ -31,15 +31,6 @@ defmodule WebTest do
     assert String.contains?(conn.resp_body, "<title>Brewberry &pi;</title>")
   end
 
-  test "reads temperature" do
-    conn = request(:get, "/temperature")
-    temp = 0
-
-    assert conn.state == :sent
-    assert conn.status == 200
-    assert conn.resp_body == "{\"mash-temperature\":#{temp}}"
-  end
-
   test "set temperature" do
     conn = request(:post, "/temperature", "{\"set\":42}")
 

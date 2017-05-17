@@ -17,8 +17,7 @@ defmodule Web.Router do
   plug :dispatch
 
   get "/temperature" do
-    {_id, sample} = Ctrl.TimeSeries.last
-    send_resp(conn, 200, Poison.encode!(%{"mash-temperature" => sample.mash_temperature}))
+    send_last_value conn, fn sample -> %{"mash-temperature" => sample.mash_temperature} end
   end
 
   post "/temperature" do
@@ -28,8 +27,7 @@ defmodule Web.Router do
   end
 
   get "/controller" do
-    {_id, sample} = Ctrl.TimeSeries.last
-    send_resp(conn, 200, Poison.encode!(%{"controller" => sample.mode}))
+    send_last_value conn, fn sample -> %{"controller" => sample.mode} end
   end
 
   post "/controller" do
@@ -55,6 +53,13 @@ defmodule Web.Router do
     |> send_chunked(200)
     |> send_past_events(last_event_id)
     |> send_events()
+  end
+
+  defp send_last_value(conn, callback) do
+    case Ctrl.TimeSeries.last do
+      {_id, sample} -> send_resp(conn, 200, Poison.encode!(callback.(sample)))
+      :no_data      -> send_resp(conn, 200, "{}")
+    end
   end
 
   defp send_past_events(conn, last_event_id) do

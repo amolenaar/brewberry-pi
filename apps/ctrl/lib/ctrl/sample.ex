@@ -5,12 +5,15 @@ defmodule Ctrl.Sample do
 
   * `:time` is a unix timestamp (in seconds),
   * `:temperature` the measured temperature (in &deg;C),
-  * `heater` defines the current (desired) heater state (`:on` or `:off`),
-  * `mode` is the current mode of the controller (`:idle`, `:resting`, `:heating` or `:slacking`),
+  * `:heater` defines the current (desired) heater state (`:on` or `:off`),
+  * `:mode` is the current mode of the controller (`:idle`, `:resting`, `:heating` or `:slacking`),
   * `:mash_temperature` contains the set mash temperature.
   """
 
-  defstruct time: 0, temperature: 0, heater: :off, mode: :idle, mash_temperature: 0
+  @fields [:time, :temperature, :heater, :mode, :mash_temperature]
+
+  @enforce_keys @fields
+  defstruct @fields
 
   @type time :: non_neg_integer
   @type temp :: Ctrl.Thermometer.temp
@@ -23,5 +26,9 @@ defmodule Ctrl.Sample do
     mode: mode,
     mash_temperature: temp
   }
+
+  def new(fields) do
+    struct! Ctrl.Sample, fields
+  end
 
 end

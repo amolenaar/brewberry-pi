@@ -70,15 +70,14 @@ defmodule Ctrl.ControllerServer do
     new_temp = Thermometer.read(config.thermometer)
     controller = Controller.update(config.controller, now, new_temp)
     mode = Controller.mode?(controller)
+    mash_temp = Controller.mash_temperature?(controller)
     on_off = Heater.update(config.heater, mode)
 
-    sample = %Sample{
-      time: now,
+    sample = Sample.new(time: now,
       temperature: new_temp,
       heater: on_off,
       mode: mode,
-      mash_temperature: Controller.mash_temperature?(controller)
-    }
+      mash_temperature: mash_temp)
 
     Ctrl.TimeSeries.update sample.time |> DateTime.to_unix, sample
 
