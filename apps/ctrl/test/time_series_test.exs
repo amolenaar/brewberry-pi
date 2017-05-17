@@ -16,16 +16,16 @@ defmodule TimeSeriesTest do
     TimeSeries.update(time_series, 1000, %{val: 100})
     TimeSeries.update(time_series, 2000, %{val: 20})
 
-    assert TimeSeries.get_series(time_series, 0) == [{1000, %{val: 100}}, {2000, %{val: 20}}]
+    assert TimeSeries.since(time_series, 0) == [{1000, %{val: 100}}, {2000, %{val: 20}}]
   end
 
   test "should get a time series since a start date", %{time_series: time_series} do
     TimeSeries.update(time_series, 1000, %{val: 100})
     TimeSeries.update(time_series, 2000, %{val: 20})
 
-    assert TimeSeries.get_series(time_series, 100) == [{1000, %{val: 100}}, {2000, %{val: 20}}]
-    assert TimeSeries.get_series(time_series, 1000) == [{2000, %{val: 20}}]
-    assert TimeSeries.get_series(time_series, 2001) == []
+    assert TimeSeries.since(time_series, 100) == [{1000, %{val: 100}}, {2000, %{val: 20}}]
+    assert TimeSeries.since(time_series, 1000) == [{2000, %{val: 20}}]
+    assert TimeSeries.since(time_series, 2001) == []
   end
 
   test "series should truncate after 3 hours", %{time_series: time_series} do
@@ -38,7 +38,7 @@ defmodule TimeSeriesTest do
 
     wait_until 10, fn -> {:messages, []} = :erlang.process_info(time_series, :messages) end
 
-    assert TimeSeries.get_series(time_series, 0) == [{2 * @one_hour + 1, @dummy_val}, {3 * @one_hour, @dummy_val}, {5 * @one_hour, @dummy_val}]
+    assert TimeSeries.since(time_series, 0) == [{2 * @one_hour + 1, @dummy_val}, {3 * @one_hour, @dummy_val}, {5 * @one_hour, @dummy_val}]
   end
 
   def wait_until(0, fun), do: fun.()

@@ -1,5 +1,8 @@
 defmodule Ctrl.ControllerServer do
-  @moduledoc "The Controller process"
+  @moduledoc """
+  The Controller process.
+  This is where is all comes together.
+  """
   use GenServer
 
   alias Ctrl.Sample
@@ -61,12 +64,7 @@ defmodule Ctrl.ControllerServer do
     {:noreply, %{config | controller: Controller.pause(config.controller)}}
   end
 
-  def handle_cast({:mash_temp, new_temp}, config) do
-    {:noreply, %{config | controller: Controller.mash_temperature(config.controller, new_temp)}}
-  end
-
   def handle_cast({:tick, now}, config) do
-
     new_temp = Thermometer.read(config.thermometer)
     controller = Controller.update(config.controller, now, new_temp)
     mode = Controller.mode?(controller)
@@ -79,9 +77,13 @@ defmodule Ctrl.ControllerServer do
       mode: mode,
       mash_temperature: mash_temp)
 
-    Ctrl.TimeSeries.update sample.time |> DateTime.to_unix, sample
+    Ctrl.TimeSeries.update(now |> DateTime.to_unix, sample)
 
     {:noreply, %{config | controller: controller}}
+  end
+
+ def handle_cast({:mash_temp, new_temp}, config) do
+    {:noreply, %{config | controller: Controller.mash_temperature(config.controller, new_temp)}}
   end
 
 end

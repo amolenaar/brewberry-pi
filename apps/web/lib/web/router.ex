@@ -65,7 +65,7 @@ defmodule Web.Router do
   defp send_past_events(conn, last_event_id) do
     chunk(conn,
       last_event_id
-      |> Ctrl.TimeSeries.get_series
+      |> Ctrl.TimeSeries.since
       |> encode_events
     )
     conn
