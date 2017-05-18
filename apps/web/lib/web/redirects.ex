@@ -1,7 +1,6 @@
 defmodule Web.Redirects do
-  use Plug.Redirect
-
   @moduledoc false
+  use Plug.Redirect
 
   redirect "/", "/index.html"
 end

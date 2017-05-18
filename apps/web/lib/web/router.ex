@@ -1,8 +1,7 @@
 defmodule Web.Router do
+  @moduledoc false
   use Plug.Router
   require Logger
-
-  @moduledoc false
 
   if Mix.env == :dev do
     use Plug.Debugger

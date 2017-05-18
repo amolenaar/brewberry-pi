@@ -1,5 +1,5 @@
 defmodule Ctrl.Heater.Kettle do
-  @moduledoc false
+  @moduledoc "The kettle."
   @behaviour Ctrl.Heater
 
   @pin 17

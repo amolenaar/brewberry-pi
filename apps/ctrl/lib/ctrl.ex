@@ -1,7 +1,9 @@
 defmodule Ctrl do
+  @moduledoc """
+  The Ctrl (Controller) application.
+  """
   use Application
 
-  @moduledoc false
 
   alias Ctrl.ControllerServer
   alias Ctrl.Metronome

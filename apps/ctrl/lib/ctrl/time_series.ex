@@ -1,6 +1,8 @@
 defmodule Ctrl.TimeSeries do
+  @moduledoc """
+  Stores and retrieves samples.
+  """
   use GenServer
-  @moduledoc false
 
   @history_sec 10_800 # 3 hours
   @delay_sec 300 # 5 minutes

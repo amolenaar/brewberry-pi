@@ -1,5 +1,7 @@
 defmodule FwRpi do
-  @moduledoc "Set up Raspberry Pi networking."
+  @moduledoc """
+  Set up Raspberry Pi networking.
+  """
   use Application
 
   alias Nerves.Networking

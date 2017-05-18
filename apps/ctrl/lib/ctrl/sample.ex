@@ -1,5 +1,4 @@
 defmodule Ctrl.Sample do
-
   @moduledoc """
   This module defines what a temperature sample looks like.
 

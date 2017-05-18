@@ -1,10 +1,10 @@
 defmodule Ctrl.BrewHouse do
   @moduledoc """
   Configuration for the brew house.
-  * `power` in watts
-  * `efficiency` factor
-  * `volume` in litres
-  * `wait_time` in seconds
+  * `power` of the brewkettle, in watts
+  * `efficiency` factor of the brewkettle
+  * `volume` of the wort, in litres
+  * `wait_time` in seconds, to avoid heater from turning on and off to fast.
   """
 
   alias Ctrl.BrewHouse

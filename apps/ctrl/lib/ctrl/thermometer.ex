@@ -1,5 +1,7 @@
 defmodule Ctrl.Thermometer do
-  @moduledoc false
+  @moduledoc """
+  Temperature sensor behaviour.
+  """
 
   @opaque t :: %Ctrl.Thermometer{
     module: module,

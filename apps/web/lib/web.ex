@@ -1,7 +1,9 @@
 defmodule Web do
+  @moduledoc """
+  Plug based web frontend.
+  """
   use Application
 
-  @moduledoc false
 
   alias Web.Router
   alias Plug.Adapters.Cowboy
