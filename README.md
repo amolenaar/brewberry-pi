@@ -60,12 +60,12 @@ A schema is made with [Fritzing](http://fritzing.org) and is available in the fi
 
 ### Bill of Materials
 
-| Label | Part Type | Properties |
-| ----- | --------- | ---------- |
-| -     | -                   | PCB prototype board |
-| J1    | Screw terminal      | 3 pins, connector to DS18B20 |
-| J2    | Power plug          | connector to SSR |
-| Pi1   | Adafruit Pi Cobbler | manufacturer Adafruit Industries |
+| Label | Part Type           | Properties                         |
+| ----- | ------------------- | ---------------------------------- |
+| -     | -                   | PCB prototype board                |
+| J1    | Screw terminal      | 3 pins, connector to DS18B20       |
+| J2    | Power plug          | connector to SSR                   |
+| Pi1   | Adafruit Pi Cobbler | manufacturer Adafruit Industries   |
 | Q1    | NPN-Transistor      | type NPN (EBC); package TO92 [THT] |
 | R1    | 4.7kΩ Resistor      | pullup resistor                    |
 | R2    | 1kΩ Resistor        |                                    |
