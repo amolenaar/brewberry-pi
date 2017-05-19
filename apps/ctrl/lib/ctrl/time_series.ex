@@ -33,9 +33,7 @@ defmodule Ctrl.TimeSeries do
     GenServer.cast(time_series, {:truncate, @history_sec})
   end
 
-  def stream() do
-    Ctrl.TimeSeries.Dispatcher.stream
-  end
+  defdelegate stream(), to: Ctrl.TimeSeries.Dispatcher
 
   ## Server
 
