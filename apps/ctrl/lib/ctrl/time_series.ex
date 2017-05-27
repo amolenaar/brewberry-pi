@@ -37,9 +37,7 @@ defmodule Ctrl.TimeSeries do
 
   ## Server
 
-  @doc """
-  Initialize the server with an empty time series and an oldest sample timestamp.
-  """
+  # Initialize the server with an empty time series and an oldest sample timestamp.
   def init(nil) do
     {:ok, {[], 0}}
   end

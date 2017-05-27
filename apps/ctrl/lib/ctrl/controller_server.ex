@@ -54,12 +54,10 @@ defmodule Ctrl.ControllerServer do
 
   @spec handle_cast(atom | {atom, any}, t) :: {:noreply, t}
 
-  @doc "Start the controller."
   def handle_cast(:resume, config) do
     {:noreply, %{config | controller: Controller.resume(config.controller)}}
   end
 
-  @doc "Stop the controller."
   def handle_cast(:pause, config) do
     {:noreply, %{config | controller: Controller.pause(config.controller)}}
   end
