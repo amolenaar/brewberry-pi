@@ -42,8 +42,9 @@ defmodule FwRpi.Mixfile do
    end
 
   def deps do
-    [{:nerves, "~> 0.5.1"},
+    [{:nerves, "~> 0.5.2"},
      {:nerves_networking, "~> 0.6.0", warn_missing: false},
+     {:nerves_network_interface, "~> 0.4.0"},
      {:nerves_firmware_http, "~> 0.4.1"},
      {:ctrl, in_umbrella: true},
      {:web, in_umbrella: true}]
@@ -51,8 +52,8 @@ defmodule FwRpi.Mixfile do
 
   def system(:host), do: []
   def system(target) do
-    [{:nerves_runtime, "~> 0.1.0"},
-     {:"nerves_system_#{target}", "~> 0.11.0", runtime: false}]
+    [{:nerves_runtime, "~> 0.2.0"},
+     {:"nerves_system_#{target}", "~> 0.12.0", runtime: false}]
   end
 
   def aliases(:host), do: []
