@@ -52,7 +52,7 @@ defmodule FwRpi.Mixfile do
 
   def system(:host), do: []
   def system(target) do
-    [{:nerves_runtime, "~> 0.2.0"},
+    [{:nerves_runtime, "~> 0.3.0"},
      {:"nerves_system_#{target}", "~> 0.12.0", runtime: false}]
   end
 
