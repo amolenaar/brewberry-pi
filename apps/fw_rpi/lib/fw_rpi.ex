@@ -13,6 +13,7 @@ defmodule FwRpi do
     start_wifi()
     start_network()
     network_time()
+    :dnssd.register("Brewberry Pi", "_http._tcp", 80)
     {:ok, self()}
   end
 
