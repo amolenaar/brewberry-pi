@@ -44,7 +44,6 @@ defmodule FwRpi.Mixfile do
   def deps do
     [{:nerves, "~> 0.5.2"},
      {:nerves_networking, "~> 0.6.0", warn_missing: false},
-     {:nerves_network_interface, "~> 0.4.0"},
      {:nerves_firmware_http, "~> 0.4.1"},
      {:nerves_dnssd, github: "amolenaar/nerves_dnssd"},
      {:ctrl, in_umbrella: true},
