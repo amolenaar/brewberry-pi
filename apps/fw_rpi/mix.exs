@@ -13,9 +13,9 @@ defmodule FwRpi.Mixfile do
   def project do
     [app: :fw_rpi,
      version: "0.1.0",
-     elixir: "~> 1.4.2",
+     elixir: "~> 1.5.0",
      target: @target,
-     archives: [nerves_bootstrap: "~> 0.3.1"],
+     archives: [nerves_bootstrap: "~> 0.6.1"],
 
      deps_path: "../../deps",
      build_path: "../../_build",
@@ -42,18 +42,18 @@ defmodule FwRpi.Mixfile do
    end
 
   def deps do
-    [{:nerves, "~> 0.5.2"},
+    [{:nerves, "~> 0.7.5"},
      {:nerves_networking, "~> 0.6.0", warn_missing: false},
      {:nerves_firmware_http, "~> 0.4.1"},
-     {:nerves_dnssd, github: "amolenaar/nerves_dnssd"},
+     {:nerves_dnssd, "~> 0.1.0"},
      {:ctrl, in_umbrella: true},
      {:web, in_umbrella: true}]
   end
 
   def system(:host), do: []
   def system(target) do
-    [{:nerves_runtime, "~> 0.3.0"},
-     {:"nerves_system_#{target}", "~> 0.12.0", runtime: false}]
+    [{:nerves_runtime, "~> 0.4.4"},
+     {:"nerves_system_#{target}", "~> 0.16.1", runtime: false}]
   end
 
   def aliases(:host), do: []
