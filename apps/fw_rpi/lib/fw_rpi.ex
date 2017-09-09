@@ -6,12 +6,13 @@ defmodule FwRpi do
 
   alias Nerves.Networking
 
-  @wlan_interface :wlan0
-  @wpa_supplicant_conf "/etc/wpa_supplicant.conf"
+  @wlan_interface "wlan0"
+  @wlan_ssid Application.get_env(:fw_rpi, :ssid)
+  @wlan_key_mgmt Application.get_env(:fw_rpi, :key_mgmt)
+  @wlan_psk Application.get_env(:fw_rpi, :psk)
 
   def start(_type, _args) do
     start_wifi()
-    start_network()
     network_time()
     :dnssd.register("Brewberry π", "_http._tcp", 80)
     {:ok, self()}
@@ -21,17 +22,10 @@ defmodule FwRpi do
   def start_wifi do
     {_, 0} = System.cmd("/sbin/modprobe", ["8192cu"])
 
-    {_, 0} = System.cmd("/usr/sbin/wpa_supplicant", ["-s", "-B",
-        "-i", Atom.to_string(@wlan_interface),
-        "-D", "nl80211,wext",
-        "-c", @wpa_supplicant_conf])
-    :timer.sleep(500)
-    :ok
-  end
-
-  @spec start_network() :: :ok
-  def start_network do
-    {:ok, _} = Networking.setup @wlan_interface
+    Nerves.Network.setup @wlan_interface,
+      ssid: @wlan_ssid,
+      key_mgmt: @wlan_key_mgmt,
+      psk: @wlan_psk
     :ok
   end
 

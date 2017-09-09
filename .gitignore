@@ -23,4 +23,4 @@ erl_crash.dump
 *.iws
 *.ipr
 
-wpa_supplicant.conf
+apps/fw_rpi/config/wifi.exs
