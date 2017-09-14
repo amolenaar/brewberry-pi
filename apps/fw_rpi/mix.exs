@@ -17,8 +17,8 @@ defmodule FwRpi.Mixfile do
      target: @target,
      archives: [nerves_bootstrap: "~> 0.6.1"],
 
-     deps_path: "../../deps",
-     build_path: "../../_build",
+     deps_path: "../../deps/#{@target}",
+     build_path: "../../_build/#{@target}",
      config_path: "../../config/config.exs",
      lockfile: "../../mix.lock",
 
