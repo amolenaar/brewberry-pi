@@ -12,4 +12,7 @@ before_install:
   - cp apps/fw_rpi/config/wifi-example.exs apps/fw_rpi/config/wifi.exs
   - sudo apt-get install -y libmnl-dev
 
+before_script:
+  - mix archive.install https://github.com/nerves-project/archives/raw/master/nerves_bootstrap.ez
+
 sudo: false
