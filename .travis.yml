@@ -4,8 +4,6 @@ elixir:
   - 1.5.1
 
 otp_release:
-  - 19.1
-  - 19.2
   - 20.0
 
 before_install:
