@@ -1,10 +1,15 @@
 language: elixir
 
 elixir:
-  - 1.4.2
+  - 1.5.1
 
 otp_release:
   - 19.1
   - 19.2
+  - 20.0
+
+before_install:
+  - cp apps/fw_rpi/config/wifi-example.exs apps/fw_rpi/config/wifi.exs
+  - sudo apt-get install -y libmnl-dev
 
 sudo: false
