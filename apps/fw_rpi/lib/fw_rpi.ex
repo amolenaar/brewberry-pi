@@ -20,13 +20,13 @@ defmodule FwRpi do
 
   @spec start_wifi() :: :ok
   def start_wifi do
+    # No longer needed?
     {_, 0} = System.cmd("/sbin/modprobe", ["8192cu"])
 
     Nerves.Network.setup @wlan_interface,
       ssid: @wlan_ssid,
       key_mgmt: @wlan_key_mgmt,
       psk: @wlan_psk
-    :ok
   end
 
   def network_time do
