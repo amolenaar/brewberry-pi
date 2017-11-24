@@ -39,9 +39,9 @@ https://github.com/amolenaar/brewberry-pi-python.
 To build an image for the Raspberry Pi (model B):
 
  * Ensure Nerves stuff is installed on your machine, check out the Nerves getting started guide
- * Install dependencies with `MIX_ENV=prod mix deps.get`
  * Go to the firmware application with `cd apps/fw_rpi`
- * Copy `condif/wifi-example.exs.example` to `wifi.exs` and fix the ssid and psk properties
+ * Install dependencies with `MIX_ENV=prod mix deps.get`
+ * Copy `apps/fw_rpi/config/wifi-example.exs.example` to `apps/fw_rpi/config/wifi.exs` and fix the ssid and psk properties
  * Create firmware with `MIX_ENV=prod mix firmware`
  * Burn to an SD card with `MIX_ENV=prod mix firmware.burn`
  * And do remote updates once your first image is up and running: `MIX_ENV=prod mix firmware.push 10.192.168.122 --firmware ../../_build/rpi/prod/nerves/images/fw_rpi.fw`
