@@ -19,11 +19,11 @@ function Logger() {
 
     var eventSource;
 
-    this.state = function () {
-       return eventSource.readyState;
+    this.state = function() {
+        return eventSource.readyState;
     };
 
-    this.onlineCheck = function () {
+    this.onlineCheck = function() {
         // EventSource watchdog
         // readyState: 0=connecting, 1=open, 2=closed
         if (!eventSource || eventSource.readyState === 2) {
@@ -55,11 +55,11 @@ function Logger() {
 
     setInterval(this.onlineCheck, 1000);
 
-    this.onSample = function (callback) {
+    this.onSample = function(callback) {
         self.on("sample", callback);
     };
 
-    this.onSampleOnce = function (callback) {
+    this.onSampleOnce = function(callback) {
         self.one("sample", callback);
     };
 
@@ -73,21 +73,21 @@ function Controls() {
         send("/controller", { "set": power });
     }
 
-    this.turnOn = function () {
+    this.turnOn = function() {
         setHeater("on");
     };
 
-    this.turnOff = function () {
+    this.turnOff = function() {
         setHeater("off");
     };
 
-    this.setTemperature = function (t) {
+    this.setTemperature = function(t) {
         send("/temperature", { "set": t });
     };
 }
 
 // Presenter
-window.onload = (function () {
+window.onload = (function() {
 
     var logger = new Logger(),
         controls = new Controls();
@@ -100,19 +100,22 @@ window.onload = (function () {
         "type": "switch",
         "x": "time",
         "y": "heater",
-        "color": "#DF5353" });
+        "color": "#DF5353"
+    });
     addSeries(chart, logger, {
         "name": "Mash temperature",
         "type": "temperature",
         "x": "time",
         "y": "mash_temperature",
-        "color": "#DDDF0D" });
+        "color": "#DDDF0D"
+    });
     addSeries(chart, logger, {
         "name": "Temperature",
         "type": "temperature",
         "x": "time",
         "y": "temperature",
-        "color": "#0000BF" });
+        "color": "#0000BF"
+    });
 
     /* Controls */
     var temperatureDisplay = document.querySelector("#temperature"),
@@ -120,36 +123,38 @@ window.onload = (function () {
         setTemperatureButton = document.querySelector("#set-temperature"),
         healthDisplay = document.querySelector("#health");
 
-    logger.onSample(function (sample) {
+    logger.onSample(function(sample) {
         temperatureDisplay.textContent = sample.temperature.toFixed(2);
         healthDisplay.classList.toggle("odd");
         healthDisplay.textContent = (new Date().toLocaleTimeString() + " / " + sample.mode);
     });
 
-    logger.onSample(function (sample) {
+    logger.onSample(function(sample) {
         if (setTemperatureButton !== document.activeElement) {
             setTemperatureButton.value = sample.mash_temperature;
         }
     });
 
-    logger.onSample(function (sample) {
+    logger.onSample(function(sample) {
         if (turnOnOffButton !== document.activeElement) {
             turnOnOffButton.checked = (sample.mode !== "idle");
         }
     });
 
-    turnOnOffButton.addEventListener("change", function () {
+    turnOnOffButton.addEventListener("change", function() {
         if (this.checked) {
             controls.turnOn();
         } else {
-            controls.turnOff();
+            if (confirm('Are you sure you wanna turn it off?')) {
+                controls.turnOff();
+            }
         }
         // Check logger, re-initiate if needed.
         logger.onlineCheck();
         return false;
     });
 
-    setTemperatureButton.addEventListener("change", function () {
+    setTemperatureButton.addEventListener("change", function() {
         var temperature = setTemperatureButton.value;
         if (temperature) {
             controls.setTemperature(parseInt(temperature));
