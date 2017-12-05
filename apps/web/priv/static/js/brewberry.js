@@ -145,7 +145,7 @@ window.onload = (function() {
         if (this.checked) {
             controls.turnOn();
         } else {
-            if (confirm('Are you sure you wanna turn it off?')) {
+            if (confirm("Are you sure you wanna turn it off?")) {
                 controls.turnOff();
             }
         }
