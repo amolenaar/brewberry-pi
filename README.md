@@ -31,7 +31,7 @@ https://github.com/amolenaar/brewberry-pi-python.
 
  * Go to the web application with `cd apps/web`
  * Run `mix deps.get` 
- * `iex -S mix` will lauch the app and open a console, so you can tinker around
+ * `MIX_ENV=dev iex -S mix` will lauch the app and open a console, so you can tinker around
  * Open a browser on http://localhost:3030, the (web) app will be running there in "fake" mode
  
 ## Firmware
