@@ -7,8 +7,8 @@ config :nerves, :firmware,
 config :nerves_network,
   regulatory_domain: "NL"
 
-config :bootloader,
-  overlay_path: "/tmp/erl_bootloader",
+config :shoehorn,
+  overlay_path: "/tmp/erl_shoehorn",
   init: [:nerves_runtime], # Init network, with fw_rpi
   app: :fw_rpi # Load :web app instead?
 
