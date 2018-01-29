@@ -45,8 +45,7 @@ defmodule FwRpi.Mixfile do
     [{:nerves, "~> 0.7.5"},
      {:nerves_network, "~> 0.3.4"},
      {:nerves_firmware_http, "~> 0.4.1"},
-     #{:nerves_dnssd, "~> 0.1.0"},
-     {:nerves_dnssd, github: "amolenaar/nerves_dnssd"},
+     {:nerves_dnssd, "~> 0.3"},
      {:bootloader, "~> 0.1"},
      {:ctrl, in_umbrella: true},
      {:web, in_umbrella: true}]
