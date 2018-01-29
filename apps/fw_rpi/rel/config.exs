@@ -28,7 +28,7 @@ end
 
 release :fw_rpi do
   set version: current_version(:fw_rpi)
-  plugin Bootloader.Plugin
+  plugin Shoehorn
   if System.get_env("NERVES_SYSTEM") do
     set dev_mode: false
     set include_src: false
