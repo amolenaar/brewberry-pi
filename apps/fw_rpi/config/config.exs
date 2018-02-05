@@ -1,7 +1,11 @@
 use Mix.Config
 
 config :nerves, :firmware,
-  fwup_conf: "config/rpi/fwup.conf",
+  fwup_conf: (case System.get_env("MIX_TARGET") do
+      "rpi"  -> "config/rpi/fwup.conf"
+      "rpi3" -> "config/rpi3/fwup.conf"
+      _      -> nil
+    end),
   rootfs_overlay: "config/rootfs-additions"
 
 config :nerves_network,
